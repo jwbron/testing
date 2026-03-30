@@ -18,6 +18,9 @@ uv sync --dev
 # Run tests
 uv run pytest
 
+# Run tests with verbose output
+uv run pytest -v
+
 # Run linter
 uv run ruff check .
 
@@ -65,7 +68,12 @@ merge_intervals([[1, 3], [2, 6], [8, 10], [15, 18]])
 
 **Algorithm:** Sort intervals by start time, then iterate through. For each
 interval, either merge it with the previous (if overlapping) or append it as a
-new interval. Runs in **O(n log n)** time due to sorting.
+new interval.
+
+| Metric | Complexity |
+|--------|-----------|
+| Time   | O(n log n) — dominated by sorting |
+| Space  | O(n) — for sorted copy and result |
 
 **Edge cases handled:**
 - Empty input
