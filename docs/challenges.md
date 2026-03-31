@@ -115,3 +115,207 @@ assert result == [[1, 6], [8, 10], [15, 18]]
 result = merge_intervals([[-5, -1], [-3, 2], [4, 8]])
 assert result == [[-5, 2], [4, 8]]
 ```
+
+---
+
+## In-Memory Database
+
+**Module**: `src/challenges/inmemory_db.py`
+**Tests**: `tests/test_inmemory_db.py`
+
+### Problem Statement
+
+Build a simple in-memory relational database that supports table creation with
+typed columns, primary key constraints, and full CRUD operations (insert,
+select, update, delete) with callable-based filtering.
+
+### API
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+```
+
+#### `create_table(name, columns, primary_key=None)`
+
+Create a new table with a typed schema.
+
+```python
+db.create_table("users", {"id": int, "name": str, "age": int}, primary_key="id")
+```
+
+- `name` &mdash; table name (string)
+- `columns` &mdash; mapping of column names to Python types (`int`, `str`, `float`, `bool`, etc.)
+- `primary_key` &mdash; optional column name to enforce uniqueness
+
+**Raises**: `TableExistsError` if the table already exists; `ColumnError` if the
+primary key is not in the column definitions.
+
+#### `drop_table(name)`
+
+Remove a table and all its data.
+
+```python
+db.drop_table("users")
+```
+
+**Raises**: `TableNotFoundError` if the table does not exist.
+
+#### `insert(table, row)`
+
+Insert a row into a table. The row must include all defined columns with values
+matching the expected types.
+
+```python
+db.insert("users", {"id": 1, "name": "Alice", "age": 30})
+```
+
+**Raises**:
+- `TableNotFoundError` &mdash; table does not exist
+- `ColumnError` &mdash; missing or extra columns
+- `TypeValidationError` &mdash; value type does not match column type
+- `PrimaryKeyViolationError` &mdash; duplicate primary key value
+
+#### `select(table, where=None)`
+
+Retrieve rows from a table, optionally filtered by a predicate. Returns copies
+of the rows (mutations to results do not affect stored data).
+
+```python
+# All rows
+db.select("users")
+
+# Filtered
+db.select("users", where=lambda r: r["age"] > 25)
+```
+
+**Returns**: `list[dict[str, Any]]` &mdash; matching rows.
+
+#### `update(table, values, where=None)`
+
+Update columns on matching rows. Returns the count of updated rows.
+
+```python
+count = db.update("users", {"age": 31}, where=lambda r: r["name"] == "Alice")
+```
+
+**Raises**: `ColumnError` for unknown columns; `TypeValidationError` for type
+mismatches; `PrimaryKeyViolationError` if the update would create duplicate
+primary keys.
+
+**Returns**: `int` &mdash; number of rows updated.
+
+#### `delete(table, where=None)`
+
+Delete matching rows (or all rows if no predicate). Returns the count of deleted
+rows.
+
+```python
+count = db.delete("users", where=lambda r: r["id"] == 1)
+```
+
+**Returns**: `int` &mdash; number of rows deleted.
+
+### Exception Hierarchy
+
+All exceptions inherit from `DatabaseError`:
+
+| Exception | When raised |
+|-----------|-------------|
+| `DatabaseError` | Base class for all database errors |
+| `TableExistsError` | Creating a table that already exists |
+| `TableNotFoundError` | Referencing a table that does not exist |
+| `PrimaryKeyViolationError` | Inserting/updating with a duplicate primary key |
+| `TypeValidationError` | Column value does not match the expected type |
+| `ColumnError` | Missing or unknown columns in a row |
+
+### Design Decisions
+
+- **Callable-based filtering**: The `where` parameter accepts any
+  `Callable[[dict], bool]`, giving callers maximum flexibility without
+  implementing a query language.
+- **Copy semantics**: `select` returns deep copies of rows so callers cannot
+  accidentally mutate stored data.
+- **Strict schema enforcement**: Every `insert` must provide exactly the columns
+  defined in the schema &mdash; no extra, no missing.
+- **Linear primary key checks**: Primary key uniqueness is validated via a linear
+  scan of existing rows. Suitable for small datasets; for larger tables an index
+  structure would be needed.
+
+### Complexity
+
+| Operation | Time | Space | Notes |
+|-----------|------|-------|-------|
+| `create_table` | O(1) | O(c) | c = number of columns |
+| `drop_table` | O(1) | &mdash; | Frees table storage |
+| `insert` | O(n) | O(c) | n = existing rows (PK scan) |
+| `select` | O(n) | O(n) | Returns copies of matching rows |
+| `update` | O(n) | O(1) | In-place update of matched rows |
+| `delete` | O(n) | O(n) | Builds new list of kept rows |
+
+### Usage Examples
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+
+# Create a table with a primary key
+db.create_table("products", {"sku": str, "name": str, "price": float}, primary_key="sku")
+
+# Insert rows
+db.insert("products", {"sku": "A001", "name": "Widget", "price": 9.99})
+db.insert("products", {"sku": "A002", "name": "Gadget", "price": 24.99})
+
+# Select all
+db.select("products")
+# => [{'sku': 'A001', 'name': 'Widget', 'price': 9.99},
+#     {'sku': 'A002', 'name': 'Gadget', 'price': 24.99}]
+
+# Select with filter
+db.select("products", where=lambda r: r["price"] < 15.0)
+# => [{'sku': 'A001', 'name': 'Widget', 'price': 9.99}]
+
+# Update rows
+db.update("products", {"price": 19.99}, where=lambda r: r["sku"] == "A001")
+
+# Delete rows
+db.delete("products", where=lambda r: r["sku"] == "A002")
+
+# Drop the table
+db.drop_table("products")
+```
+
+### Error Handling Examples
+
+```python
+from challenges.inmemory_db import (
+    InMemoryDB,
+    TableExistsError,
+    PrimaryKeyViolationError,
+    TypeValidationError,
+)
+
+db = InMemoryDB()
+db.create_table("users", {"id": int, "name": str}, primary_key="id")
+
+# Duplicate table
+try:
+    db.create_table("users", {"id": int})
+except TableExistsError:
+    pass  # "Table 'users' already exists"
+
+# Duplicate primary key
+db.insert("users", {"id": 1, "name": "Alice"})
+try:
+    db.insert("users", {"id": 1, "name": "Bob"})
+except PrimaryKeyViolationError:
+    pass  # "Duplicate primary key 'id' = 1"
+
+# Wrong column type
+try:
+    db.insert("users", {"id": "not_an_int", "name": "Charlie"})
+except TypeValidationError:
+    pass  # "Column 'id' expected int, got str"
+```

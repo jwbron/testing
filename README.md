@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges, including
+**Merge Intervals** and an **In-Memory Database**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,11 +51,13 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── inmemory_db.py           # In-Memory Database
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   └── test_inmemory_db.py          # In-Memory Database tests
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -103,6 +105,48 @@ interval overlaps the previous one, otherwise append.
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.
+
+### In-Memory Database
+
+A simple in-memory relational database supporting table creation with typed
+columns, primary key constraints, and full CRUD operations with filtering.
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+db.create_table("users", {"id": int, "name": str, "age": int}, primary_key="id")
+
+db.insert("users", {"id": 1, "name": "Alice", "age": 30})
+db.insert("users", {"id": 2, "name": "Bob", "age": 25})
+
+# Select all rows
+db.select("users")
+# => [{'id': 1, 'name': 'Alice', 'age': 30}, {'id': 2, 'name': 'Bob', 'age': 25}]
+
+# Filter with a where clause
+db.select("users", where=lambda r: r["age"] > 28)
+# => [{'id': 1, 'name': 'Alice', 'age': 30}]
+
+# Update matching rows
+db.update("users", {"age": 26}, where=lambda r: r["name"] == "Bob")
+
+# Delete matching rows
+db.delete("users", where=lambda r: r["id"] == 1)
+```
+
+**Features**: Typed columns, primary key uniqueness enforcement, column
+validation, callable-based filtering for select/update/delete.
+
+| Metric | Value | Reason |
+|--------|-------|--------|
+| Insert | O(n) | Primary key uniqueness scan |
+| Select | O(n) | Full table scan with optional filter |
+| Update | O(n) | Full table scan with optional filter |
+| Delete | O(n) | Full table scan with optional filter |
+
+See [docs/challenges.md](docs/challenges.md) for the full write-up including
+the API reference and error handling details.
 
 ## CI
 
