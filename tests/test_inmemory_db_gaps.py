@@ -257,20 +257,25 @@ class TestUpdateEdgeCases:
         count = db.update("t", values={"name": "Updated"})
         assert count == 0
 
-    def test_update_primary_key_creates_duplicate(self) -> None:
-        """Updating the primary key to an existing value is not prevented.
-
-        This documents a gap: the update method does NOT check for
-        primary key uniqueness after update, allowing duplicates.
-        """
+    def test_update_primary_key_to_duplicate_raises(self) -> None:
+        """Updating the primary key to an existing value raises ValueError."""
         db = InMemoryDB()
         db.create_table("t", {"id": int, "name": str}, primary_key="id")
         db.insert("t", {"id": 1, "name": "Alice"})
         db.insert("t", {"id": 2, "name": "Bob"})
-        # This creates a duplicate PK — implementation doesn't prevent it
-        db.update("t", values={"id": 2}, where={"id": 1})
-        rows = db.select("t", where={"id": 2})
-        assert len(rows) == 2  # Two rows with id=2
+        with pytest.raises(ValueError, match="Duplicate primary key"):
+            db.update("t", values={"id": 2}, where={"id": 1})
+
+    def test_update_primary_key_to_new_value_succeeds(self) -> None:
+        """Updating the primary key to a non-existing value should work."""
+        db = InMemoryDB()
+        db.create_table("t", {"id": int, "name": str}, primary_key="id")
+        db.insert("t", {"id": 1, "name": "Alice"})
+        db.insert("t", {"id": 2, "name": "Bob"})
+        count = db.update("t", values={"id": 99}, where={"id": 1})
+        assert count == 1
+        rows = db.select("t", where={"id": 99})
+        assert rows == [{"id": 99, "name": "Alice"}]
 
     def test_update_extra_column_not_in_schema(self) -> None:
         """Updating with a column not in the schema.
