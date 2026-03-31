@@ -1,0 +1,186 @@
+{
+  "id": "pipeline-7473562e",
+  "issue_number": null,
+  "repo": "jwbron/testing",
+  "branch": "egg/pipeline-7473562e/work",
+  "base_branch": null,
+  "prompt": "Build a simple in-memory database as a coding exercise. A single-module Python implementation supporting: create/drop tables with typed columns, insert/select/update/delete rows, filtering (where clauses), and primary key constraint enforcement.",
+  "status": "running",
+  "current_phase": "pr",
+  "config": {
+    "auto_create_pr": true,
+    "parallel_agents": true,
+    "max_review_cycles": 3,
+    "max_hitl_review_cycles": 3,
+    "hitl_gates": false,
+    "concurrent_execution": false,
+    "concurrent_phases": [
+      "refine",
+      "plan",
+      "implement"
+    ],
+    "max_concurrent_agents": 6,
+    "message_poll_hint_seconds": 30,
+    "consensus_timeout_minutes": 30,
+    "agent_idle_timeout_minutes": 60,
+    "overseer_enabled": true,
+    "orchestrator_heartbeat_timeout_seconds": 120,
+    "orchestrator_error_repeat_threshold": 3,
+    "orchestrator_message_rate_limit": 20,
+    "overseer_poll_interval_seconds": 30,
+    "overseer_max_redirects_before_escalation": 2,
+    "overseer_decision_maker_model": "sonnet",
+    "overseer_max_respawns": 3,
+    "overseer_rerun_min_work_seconds": 60,
+    "overseer_hitl_propagation_timeout_seconds": 300,
+    "start_phase": "implement"
+  },
+  "phases": {
+    "implement": {
+      "phase": "implement",
+      "status": "complete",
+      "started_at": "2026-03-31T16:43:18.687329Z",
+      "work_started_at": "2026-03-31T16:43:18.688203Z",
+      "completed_at": "2026-03-31T16:52:41.173662Z",
+      "containers": [
+        {
+          "container_id": "7a4c1a4674d0dbbd861feea3c46ef808384ad8a47532dbc57978092be09eb84a",
+          "container_name": "pipeline-7473562e-documenter",
+          "status": "exited",
+          "started_at": "2026-03-31T16:43:18.887312Z",
+          "exited_at": "2026-03-31T16:52:39.484824Z",
+          "exit_code": 0,
+          "agent_role": "documenter",
+          "session_token": null
+        },
+        {
+          "container_id": "8d80b042b3cc512093970f9d3cbbfed39caf6911e534ff305c92f0739a33f9d7",
+          "container_name": "pipeline-7473562e-tester",
+          "status": "exited",
+          "started_at": "2026-03-31T16:43:18.887326Z",
+          "exited_at": "2026-03-31T16:52:39.484834Z",
+          "exit_code": 0,
+          "agent_role": "tester",
+          "session_token": null
+        },
+        {
+          "container_id": "f05854240d6ab814fdbb1c876d21ecfbac4d055db2136fd2fb66c0669601130c",
+          "container_name": "pipeline-7473562e-reviewer_code",
+          "status": "exited",
+          "started_at": "2026-03-31T16:43:18.887331Z",
+          "exited_at": "2026-03-31T16:52:39.484843Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_code",
+          "session_token": null
+        },
+        {
+          "container_id": "21e50cb7aeed606e9b9c36753509425907757ee4dd0df921dd4472bf683c06d9",
+          "container_name": "pipeline-7473562e-reviewer_contract",
+          "status": "exited",
+          "started_at": "2026-03-31T16:43:18.887334Z",
+          "exited_at": "2026-03-31T16:52:39.484852Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_contract",
+          "session_token": null
+        },
+        {
+          "container_id": "59bf0b2616ebdccd863e021a152a1ca4edd7c655984299616248f22413828347",
+          "container_name": "pipeline-7473562e-coder",
+          "status": "exited",
+          "started_at": "2026-03-31T16:43:18.887338Z",
+          "exited_at": "2026-03-31T16:52:39.484860Z",
+          "exit_code": 0,
+          "agent_role": "coder",
+          "session_token": null
+        }
+      ],
+      "agents": [
+        {
+          "role": "documenter",
+          "status": "complete",
+          "container_id": "7a4c1a4674d0dbbd861feea3c46ef808384ad8a47532dbc57978092be09eb84a",
+          "started_at": "2026-03-31T16:43:18.887322Z",
+          "completed_at": "2026-03-31T16:52:39.484770Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "tester",
+          "status": "complete",
+          "container_id": "8d80b042b3cc512093970f9d3cbbfed39caf6911e534ff305c92f0739a33f9d7",
+          "started_at": "2026-03-31T16:43:18.887328Z",
+          "completed_at": "2026-03-31T16:52:39.484782Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "reviewer_code",
+          "status": "complete",
+          "container_id": "f05854240d6ab814fdbb1c876d21ecfbac4d055db2136fd2fb66c0669601130c",
+          "started_at": "2026-03-31T16:43:18.887332Z",
+          "completed_at": "2026-03-31T16:52:39.484790Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "reviewer_contract",
+          "status": "complete",
+          "container_id": "21e50cb7aeed606e9b9c36753509425907757ee4dd0df921dd4472bf683c06d9",
+          "started_at": "2026-03-31T16:43:18.887336Z",
+          "completed_at": "2026-03-31T16:52:39.484797Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "coder",
+          "status": "complete",
+          "container_id": "59bf0b2616ebdccd863e021a152a1ca4edd7c655984299616248f22413828347",
+          "started_at": "2026-03-31T16:43:18.887340Z",
+          "completed_at": "2026-03-31T16:52:39.484806Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        }
+      ],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [
+        {
+          "cycle": 0,
+          "started_at": "2026-03-31T16:43:18.688203Z",
+          "completed_at": null,
+          "commit_sha": "2dc4d3a5fdb90d9029bda0641d0582f1e3eceeed"
+        }
+      ],
+      "artifacts": {},
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": null
+    }
+  },
+  "decisions": [],
+  "created_at": "2026-03-31T16:43:16.757069Z",
+  "updated_at": "2026-03-31T16:53:00.606477Z",
+  "contract_synced": true,
+  "network_mode": null,
+  "mode": "issue",
+  "pr_number": null,
+  "error": null,
+  "analysis": null,
+  "plan": null,
+  "version": 11
+}
