@@ -184,6 +184,50 @@ class TestUpdateEdgeCases:
         with pytest.raises(PrimaryKeyViolationError):
             users_db.update("users", {"id": 99}, where={"age": 30})
 
+    def test_update_pk_multi_row_failure_is_atomic(self, users_db: InMemoryDB) -> None:
+        """When a PK update fails across multiple rows, NO rows should be
+        mutated — the operation must be atomic (all-or-nothing).
+
+        This catches the non-atomic update bug where the first matching row's
+        PK index is modified before the second row's PK collision is detected,
+        leaving the table in an inconsistent state.
+        """
+        users_db.insert("users", {"id": 1, "name": "A", "age": 30})
+        users_db.insert("users", {"id": 2, "name": "B", "age": 30})
+
+        with pytest.raises(PrimaryKeyViolationError):
+            users_db.update("users", {"id": 99}, where={"age": 30})
+
+        # Verify NO rows were changed — atomicity check
+        rows = users_db.select("users")
+        assert len(rows) == 2
+        ids = {r["id"] for r in rows}
+        assert ids == {1, 2}, (
+            f"Expected original PKs {{1, 2}} but got {ids} — update was not atomic"
+        )
+        # Verify PK index is consistent: inserting id=99 should succeed
+        # (it was never committed to the index)
+        users_db.insert("users", {"id": 99, "name": "C", "age": 25})
+        assert len(users_db.select("users")) == 3
+
+    def test_update_pk_collision_with_existing_non_matched_row(
+        self, users_db: InMemoryDB
+    ) -> None:
+        """Updating a matched row's PK to a value that already exists in a
+        non-matched row should raise and leave data intact.
+        """
+        users_db.insert("users", {"id": 1, "name": "A", "age": 30})
+        users_db.insert("users", {"id": 2, "name": "B", "age": 25})
+
+        with pytest.raises(PrimaryKeyViolationError):
+            users_db.update("users", {"id": 2}, where={"id": 1})
+
+        # Original state preserved
+        rows = users_db.select("users")
+        assert len(rows) == 2
+        assert rows[0]["id"] == 1
+        assert rows[1]["id"] == 2
+
     def test_update_returns_zero_on_empty_table(self, users_db: InMemoryDB) -> None:
         count = users_db.update("users", {"age": 1})
         assert count == 0
