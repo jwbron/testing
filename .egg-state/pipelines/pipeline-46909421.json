@@ -1,0 +1,186 @@
+{
+  "id": "pipeline-46909421",
+  "issue_number": null,
+  "repo": "jwbron/testing",
+  "branch": "egg/pipeline-46909421/work",
+  "base_branch": null,
+  "prompt": "Set up a Python project from scratch and solve the Merge Intervals coding challenge. Establish repo standards with proper tooling.\n\nCoding challenge: Given a list of intervals [start, end], merge all overlapping intervals and return the result. E.g., [[1,3],[2,6],[8,10],[15,18]] → [[1,6],[8,10],[15,18]].",
+  "status": "running",
+  "current_phase": "pr",
+  "config": {
+    "auto_create_pr": true,
+    "parallel_agents": true,
+    "max_review_cycles": 3,
+    "max_hitl_review_cycles": 3,
+    "hitl_gates": false,
+    "concurrent_execution": false,
+    "concurrent_phases": [
+      "refine",
+      "plan",
+      "implement"
+    ],
+    "max_concurrent_agents": 6,
+    "message_poll_hint_seconds": 30,
+    "consensus_timeout_minutes": 30,
+    "agent_idle_timeout_minutes": 60,
+    "overseer_enabled": true,
+    "orchestrator_heartbeat_timeout_seconds": 120,
+    "orchestrator_error_repeat_threshold": 3,
+    "orchestrator_message_rate_limit": 20,
+    "overseer_poll_interval_seconds": 30,
+    "overseer_max_redirects_before_escalation": 2,
+    "overseer_decision_maker_model": "sonnet",
+    "overseer_max_respawns": 3,
+    "overseer_rerun_min_work_seconds": 60,
+    "overseer_hitl_propagation_timeout_seconds": 300,
+    "start_phase": "implement"
+  },
+  "phases": {
+    "implement": {
+      "phase": "implement",
+      "status": "complete",
+      "started_at": "2026-03-31T00:42:11.855506Z",
+      "work_started_at": "2026-03-31T00:42:11.856440Z",
+      "completed_at": "2026-03-31T00:54:40.365142Z",
+      "containers": [
+        {
+          "container_id": "44878d1eeca83b8e3a9be3856994b781e4602607fe6ae4bf34a597e9244f4a13",
+          "container_name": "pipeline-46909421-reviewer_code",
+          "status": "exited",
+          "started_at": "2026-03-31T00:42:12.050470Z",
+          "exited_at": "2026-03-31T00:54:35.064722Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_code",
+          "session_token": null
+        },
+        {
+          "container_id": "b185a027d23d82e3b41aa89a1200f2656fe875ccef5b18879393ae4e4f8e50d7",
+          "container_name": "pipeline-46909421-reviewer_contract",
+          "status": "exited",
+          "started_at": "2026-03-31T00:42:12.050490Z",
+          "exited_at": "2026-03-31T00:54:35.064726Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_contract",
+          "session_token": null
+        },
+        {
+          "container_id": "94c23c0a45b87932910f8cdae4f9d17bccfe9617e6298c77887cc01d18e660a8",
+          "container_name": "pipeline-46909421-documenter",
+          "status": "exited",
+          "started_at": "2026-03-31T00:42:12.050495Z",
+          "exited_at": "2026-03-31T00:54:35.064727Z",
+          "exit_code": 0,
+          "agent_role": "documenter",
+          "session_token": null
+        },
+        {
+          "container_id": "435cebd64865a9d74270ad2b6bde13ee13dc5c6569efb915904408f74116c424",
+          "container_name": "pipeline-46909421-coder",
+          "status": "exited",
+          "started_at": "2026-03-31T00:42:12.050499Z",
+          "exited_at": "2026-03-31T00:54:35.064728Z",
+          "exit_code": 0,
+          "agent_role": "coder",
+          "session_token": null
+        },
+        {
+          "container_id": "fad77da80bc4913e6ef8f3d35ad7a4da11db361a2bc5fe190cd6789af6079251",
+          "container_name": "pipeline-46909421-tester",
+          "status": "exited",
+          "started_at": "2026-03-31T00:42:12.050502Z",
+          "exited_at": "2026-03-31T00:54:35.064729Z",
+          "exit_code": 0,
+          "agent_role": "tester",
+          "session_token": null
+        }
+      ],
+      "agents": [
+        {
+          "role": "reviewer_code",
+          "status": "complete",
+          "container_id": "44878d1eeca83b8e3a9be3856994b781e4602607fe6ae4bf34a597e9244f4a13",
+          "started_at": "2026-03-31T00:42:12.050485Z",
+          "completed_at": "2026-03-31T00:54:35.064703Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "reviewer_contract",
+          "status": "complete",
+          "container_id": "b185a027d23d82e3b41aa89a1200f2656fe875ccef5b18879393ae4e4f8e50d7",
+          "started_at": "2026-03-31T00:42:12.050493Z",
+          "completed_at": "2026-03-31T00:54:35.064709Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "documenter",
+          "status": "complete",
+          "container_id": "94c23c0a45b87932910f8cdae4f9d17bccfe9617e6298c77887cc01d18e660a8",
+          "started_at": "2026-03-31T00:42:12.050497Z",
+          "completed_at": "2026-03-31T00:54:35.064710Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "coder",
+          "status": "complete",
+          "container_id": "435cebd64865a9d74270ad2b6bde13ee13dc5c6569efb915904408f74116c424",
+          "started_at": "2026-03-31T00:42:12.050500Z",
+          "completed_at": "2026-03-31T00:54:35.064711Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "tester",
+          "status": "complete",
+          "container_id": "fad77da80bc4913e6ef8f3d35ad7a4da11db361a2bc5fe190cd6789af6079251",
+          "started_at": "2026-03-31T00:42:12.050504Z",
+          "completed_at": "2026-03-31T00:54:35.064712Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        }
+      ],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [
+        {
+          "cycle": 0,
+          "started_at": "2026-03-31T00:42:11.856440Z",
+          "completed_at": null,
+          "commit_sha": "c712bfd5711aa30e6d26ee2dc9e30d665ac1f39a"
+        }
+      ],
+      "artifacts": {},
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": null
+    }
+  },
+  "decisions": [],
+  "created_at": "2026-03-31T00:42:10.085508Z",
+  "updated_at": "2026-03-31T00:54:59.542677Z",
+  "contract_synced": true,
+  "network_mode": null,
+  "mode": "issue",
+  "pr_number": null,
+  "error": null,
+  "analysis": null,
+  "plan": null,
+  "version": 11
+}
