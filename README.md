@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges, including
+**Merge Intervals** and **Sliding Window Maximum**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,11 +51,13 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── sliding_window_max.py    # Sliding Window Maximum solution
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   └── test_sliding_window_max.py   # Sliding Window Maximum tests
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -100,6 +102,34 @@ interval overlaps the previous one, otherwise append.
 |--------|-------|--------|
 | Time | O(n log n) | Dominated by sort |
 | Space | O(n) | Output list (worst case: no overlaps) |
+
+See [docs/challenges.md](docs/challenges.md) for the full write-up including
+edge cases and test coverage details.
+
+### Sliding Window Maximum
+
+Given an array of integers and a sliding window of size `k`, return the maximum
+value in each window position as the window slides from left to right
+([LeetCode 239](https://leetcode.com/problems/sliding-window-maximum/)).
+
+```python
+from challenges.sliding_window_max import max_sliding_window
+
+max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3)
+# => [3, 3, 5, 5, 6, 7]
+
+max_sliding_window([4, 2, 7, 1], 1)
+# => [4, 2, 7, 1]
+```
+
+**Algorithm**: Monotonic deque storing indices in decreasing value order. For
+each element, expired and smaller entries are removed; the front always holds the
+current window's maximum.
+
+| Metric | Value | Reason |
+|--------|-------|--------|
+| Time | O(n) | Each element pushed/popped from deque at most once |
+| Space | O(k) | Deque holds at most k indices |
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.

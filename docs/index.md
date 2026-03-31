@@ -24,3 +24,4 @@ solutions to classic coding challenges, built with modern tooling.
 | Challenge | Module | Tests | Docs |
 |-----------|--------|-------|------|
 | Merge Intervals | `src/challenges/merge_intervals.py` | `tests/test_merge_intervals.py`, `tests/test_merge_intervals_extended.py` | [challenges.md#merge-intervals](challenges.md#merge-intervals) |
+| Sliding Window Maximum | `src/challenges/sliding_window_max.py` | `tests/test_sliding_window_max.py` | [challenges.md#sliding-window-maximum](challenges.md#sliding-window-maximum) |
