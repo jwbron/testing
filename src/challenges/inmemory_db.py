@@ -236,29 +236,55 @@ class InMemoryDB:
                 )
 
         predicate = _build_filter(where)
-        updated = 0
         pk_col = table.primary_key
         updating_pk = pk_col in values
 
-        for row in table.rows:
-            if not predicate(row):
-                continue
+        # Identify matching rows first.
+        matched_indices = [
+            i for i, row in enumerate(table.rows) if predicate(row)
+        ]
 
-            if updating_pk:
-                new_pk = values[pk_col]
-                old_pk = row[pk_col]
-                if new_pk != old_pk and new_pk in table._pk_index:
+        # Validate PK uniqueness across all matched rows before mutating any.
+        if updating_pk:
+            new_pk = values[pk_col]
+            # Build the set of PKs that will exist after the update.
+            new_pks: set[Any] = set()
+            for i in matched_indices:
+                old_pk = table.rows[i][pk_col]
+                if new_pk != old_pk:
+                    # The new PK must not collide with existing non-matched PKs
+                    # or with other matched rows being set to the same new PK.
+                    if new_pk in table._pk_index and new_pk not in {
+                        table.rows[j][pk_col] for j in matched_indices
+                    }:
+                        raise PrimaryKeyViolationError(
+                            f"Duplicate primary key '{pk_col}' = {new_pk!r} "
+                            f"in table '{table_name}'"
+                        )
+                new_pks.add(new_pk)
+            # If multiple matched rows would all get the same new PK, that's
+            # only valid if there is exactly one matched row (or the PK isn't
+            # actually changing).
+            if len(matched_indices) > 1 and len(new_pks) == 1:
+                # All matched rows map to the same new PK — check if any
+                # actually have different old PKs (which means a collision).
+                old_pks = {table.rows[i][pk_col] for i in matched_indices}
+                if old_pks != new_pks:
                     raise PrimaryKeyViolationError(
                         f"Duplicate primary key '{pk_col}' = {new_pk!r} "
                         f"in table '{table_name}'"
                     )
+
+        # Apply mutations only after all validation passes.
+        for i in matched_indices:
+            row = table.rows[i]
+            if updating_pk:
+                old_pk = row[pk_col]
                 table._pk_index.discard(old_pk)
-                table._pk_index.add(new_pk)
-
+                table._pk_index.add(values[pk_col])
             row.update(values)
-            updated += 1
 
-        return updated
+        return len(matched_indices)
 
     def delete(
         self,
