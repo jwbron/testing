@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges, including
+**Merge Intervals** and a **Simple In-Memory Database**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,11 +51,14 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── inmemory_db.py           # In-Memory Database solution
 ├── tests/
 │   ├── __init__.py
-│   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals.py      # Core Merge Intervals tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_inmemory_db.py          # In-Memory Database tests
+│   └── test_inmemory_db_gaps.py     # Gap-filling edge-case tests
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -103,6 +106,37 @@ interval overlaps the previous one, otherwise append.
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.
+
+### In-Memory Database
+
+A simple in-memory relational database supporting typed columns, primary key
+constraints, and CRUD operations with flexible where-clause filtering.
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+db.create_table("users", {"id": int, "name": str, "age": int}, primary_key="id")
+db.insert("users", {"id": 1, "name": "Alice", "age": 30})
+
+# Select with equality filter
+db.select("users", where={"name": "Alice"})
+# => [{'id': 1, 'name': 'Alice', 'age': 30}]
+
+# Select with callable predicate
+db.select("users", where=lambda r: r["age"] > 25)
+# => [{'id': 1, 'name': 'Alice', 'age': 30}]
+
+# Update and delete return affected row count
+db.update("users", {"age": 31}, where={"id": 1})  # => 1
+db.delete("users", where={"id": 1})                # => 1
+```
+
+**Features**: Typed column validation, primary key uniqueness enforcement,
+dict and callable where-clause filters, copy semantics for data isolation.
+
+See [docs/challenges.md](docs/challenges.md#in-memory-database) for the full
+API reference, exception hierarchy, and test coverage details.
 
 ## CI
 
