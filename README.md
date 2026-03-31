@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges, including the
+**Merge Intervals** problem and a **Simple In-Memory Database**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,9 +51,11 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
+│       ├── inmemory_db.py            # In-Memory Database
 │       └── merge_intervals.py       # Merge Intervals solution
 ├── tests/
 │   ├── __init__.py
+│   ├── test_inmemory_db.py          # In-Memory Database tests
 │   ├── test_merge_intervals.py      # Core test suite
 │   └── test_merge_intervals_extended.py  # Extended edge-case tests
 ├── docs/
@@ -103,6 +105,41 @@ interval overlaps the previous one, otherwise append.
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.
+
+### In-Memory Database
+
+A simple in-memory relational database supporting typed columns, primary key
+constraints, and full CRUD operations with dict-based filtering.
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+db.create_table("users", {"id": int, "name": str, "active": bool}, primary_key="id")
+
+db.insert("users", {"id": 1, "name": "Alice", "active": True})
+db.insert("users", {"id": 2, "name": "Bob", "active": False})
+
+# Select with filtering (where clause as dict of column=value pairs)
+active = db.select("users", where={"active": True})
+# => [{'id': 1, 'name': 'Alice', 'active': True}]
+
+# Update matching rows
+db.update("users", {"active": True}, where={"name": "Bob"})
+
+# Delete matching rows
+db.delete("users", where={"id": 2})
+```
+
+| Feature | Description |
+|---------|-------------|
+| Typed columns | Uses Python types (`int`, `str`, `bool`, `float`) with `isinstance` validation |
+| Primary keys | Enforces uniqueness on insert |
+| Where clauses | Dict-based equality filters for select, update, and delete |
+| Copy-on-read | Select returns copies, not references to internal data |
+
+See [docs/challenges.md](docs/challenges.md) for the full API reference and
+error handling details.
 
 ## CI
 
