@@ -146,9 +146,19 @@ class InMemoryDB:
         tbl = self._get_table(table)
         self._validate_types(tbl["columns"], values)
 
+        pk = tbl["primary_key"]
         count = 0
         for row in tbl["rows"]:
             if where is None or self._matches(row, where):
+                # If updating the primary key, check uniqueness against
+                # all rows that are NOT being updated.
+                if pk in values:
+                    new_pk = values[pk]
+                    for other in tbl["rows"]:
+                        if other is not row and other.get(pk) == new_pk:
+                            raise ValueError(
+                                f"Duplicate primary key value: {new_pk!r}"
+                            )
                 row.update(values)
                 count += 1
         return count
