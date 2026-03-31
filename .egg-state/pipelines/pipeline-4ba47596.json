@@ -170,11 +170,27 @@
       "error": null,
       "hitl_feedback": null,
       "phase_start_sha": null
+    },
+    "pr": {
+      "phase": "pr",
+      "status": "running",
+      "started_at": "2026-03-31T08:13:41.474585Z",
+      "work_started_at": "2026-03-31T08:13:41.475273Z",
+      "completed_at": null,
+      "containers": [],
+      "agents": [],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [],
+      "artifacts": {},
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": "a96d763d78e487d9b7960c600ccb19fe7c269cad"
     }
   },
   "decisions": [],
   "created_at": "2026-03-31T08:06:39.589057Z",
-  "updated_at": "2026-03-31T08:13:41.461187Z",
+  "updated_at": "2026-03-31T08:13:41.475336Z",
   "contract_synced": true,
   "network_mode": null,
   "mode": "issue",
@@ -182,5 +198,5 @@
   "error": null,
   "analysis": null,
   "plan": null,
-  "version": 11
+  "version": 13
 }
