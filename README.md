@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges, including
+**Merge Intervals** and **In-Memory Database**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,11 +51,13 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── inmemory_db.py           # In-Memory Database solution
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   └── test_inmemory_db.py          # In-Memory Database tests
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -103,6 +105,33 @@ interval overlaps the previous one, otherwise append.
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.
+
+### In-Memory Database
+
+Build a simple in-memory relational database supporting table management and
+CRUD operations with typed columns and primary key constraints.
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+db.create_table("users", {"id": "int", "name": "str"}, primary_key="id")
+db.insert("users", {"id": 1, "name": "Alice"})
+db.select("users", where=lambda r: r["name"] == "Alice")
+# => [{"id": 1, "name": "Alice"}]
+```
+
+**Features**: Create/drop tables, insert/select/update/delete rows,
+predicate-based where filters, column projection, primary key uniqueness
+enforcement, and typed column validation (`int`, `str`, `float`, `bool`).
+
+| Operation | Time | Notes |
+|-----------|------|-------|
+| Insert/Select/Update/Delete | O(n) | Linear scan over rows |
+| Create/Drop table | O(1) | Dictionary operations |
+
+See [docs/challenges.md](docs/challenges.md#in-memory-database) for the full
+write-up including API reference and edge cases.
 
 ## CI
 

@@ -115,3 +115,188 @@ assert result == [[1, 6], [8, 10], [15, 18]]
 result = merge_intervals([[-5, -1], [-3, 2], [4, 8]])
 assert result == [[-5, 2], [4, 8]]
 ```
+
+---
+
+## In-Memory Database
+
+**Module**: `src/challenges/inmemory_db.py`
+**Tests**: `tests/test_inmemory_db.py`
+
+### Problem Statement
+
+Build a simple in-memory relational database that supports core SQL-like
+operations: creating and dropping tables with typed columns, inserting rows,
+querying with filters, updating rows, and deleting rows. The database must
+enforce primary key uniqueness constraints.
+
+This is a design exercise that tests data structure choices, constraint
+enforcement, and API design without relying on any external database engine.
+
+### API
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+```
+
+#### Table Management
+
+```python
+# Create a table with typed columns and a primary key
+db.create_table("users", {
+    "id": "int",
+    "name": "str",
+    "email": "str",
+}, primary_key="id")
+
+# Drop a table
+db.drop_table("users")
+```
+
+#### Insert
+
+```python
+db.insert("users", {"id": 1, "name": "Alice", "email": "alice@example.com"})
+db.insert("users", {"id": 2, "name": "Bob", "email": "bob@example.com"})
+
+# Inserting a duplicate primary key raises an error
+db.insert("users", {"id": 1, "name": "Duplicate", "email": "dup@example.com"})
+# => raises exception (primary key violation)
+```
+
+#### Select
+
+```python
+# Select all rows
+rows = db.select("users")
+# => [{"id": 1, "name": "Alice", ...}, {"id": 2, "name": "Bob", ...}]
+
+# Select with a predicate filter
+rows = db.select("users", where=lambda r: r["name"] == "Alice")
+# => [{"id": 1, "name": "Alice", "email": "alice@example.com"}]
+
+# Select specific columns only
+rows = db.select("users", columns=["name", "email"])
+# => [{"name": "Alice", "email": "alice@example.com"}, ...]
+```
+
+#### Update
+
+```python
+# Update rows matching a predicate — returns count of rows updated
+count = db.update("users", values={"email": "newalice@example.com"},
+                  where=lambda r: r["name"] == "Alice")
+```
+
+#### Delete
+
+```python
+# Delete rows matching a predicate — returns count of rows deleted
+count = db.delete("users", where=lambda r: r["name"] == "Bob")
+```
+
+### Design
+
+The database stores tables as an in-memory dictionary mapping table names to
+their schema (column definitions, primary key) and row data. Each table's rows
+are stored in a list of dictionaries.
+
+Key design decisions:
+
+- **Typed columns**: Column types (`int`, `str`, `float`, `bool`) are declared
+  at table creation time. Values are validated on insert and update. Integer
+  values are automatically promoted to float when inserted into a float column.
+- **Primary key enforcement**: A designated primary key column uses a hash-set
+  index for O(1) uniqueness checks on insert. Primary key values must not be
+  null.
+- **Predicate-based filtering**: Select, update, and delete operations accept
+  an optional `where` callable (`Callable[[dict], bool]`) for flexible row
+  filtering. This enables arbitrary predicates beyond simple equality.
+- **Column projection**: Select supports an optional `columns` parameter to
+  return only a subset of columns.
+- **Custom exception hierarchy**: Structured exceptions (`TableExistsError`,
+  `TableNotFoundError`, `ColumnError`, `PrimaryKeyError`) all inherit from
+  `DatabaseError` for easy catch-all handling.
+
+### Supported Operations
+
+| Operation | Method | Description |
+|-----------|--------|-------------|
+| Create table | `create_table(name, columns, primary_key=None)` | Define a new table with typed columns |
+| Drop table | `drop_table(name)` | Remove a table and all its data |
+| Insert row | `insert(table, row)` | Add a row, enforcing PK uniqueness and type checks |
+| Select rows | `select(table, columns=None, where=None)` | Query rows with optional column projection and predicate filter |
+| Update rows | `update(table, values, where=None)` | Modify matching rows; returns count updated |
+| Delete rows | `delete(table, where=None)` | Remove matching rows; returns count deleted |
+
+### Complexity
+
+| Operation | Time | Notes |
+|-----------|------|-------|
+| Create/Drop table | O(1) | Dictionary insertion/deletion |
+| Insert | O(1) amortized | PK uniqueness via hash-set index; row validation is O(columns) |
+| Select | O(n) | Linear scan with optional filtering |
+| Update | O(n) | Linear scan to find and modify matching rows |
+| Delete | O(n) | Linear scan to filter out matching rows |
+
+Where *n* is the number of rows in the target table.
+
+### Edge Cases
+
+| Case | Behaviour |
+|------|-----------|
+| Create duplicate table | Raises `TableExistsError` |
+| Drop nonexistent table | Raises `TableNotFoundError` |
+| Insert into nonexistent table | Raises `TableNotFoundError` |
+| Duplicate primary key | Raises `PrimaryKeyError` |
+| Null primary key value | Raises `PrimaryKeyError` |
+| Unknown column in row | Raises `ColumnError` |
+| Type mismatch on insert/update | Raises `ColumnError` |
+| Unsupported column type at creation | Raises `ColumnError` |
+| Select from empty table | Returns empty list |
+| Update with no matches | Returns 0, no rows modified |
+| Delete with no matches | Returns 0, no rows deleted |
+| Missing columns on insert | Filled with `None` |
+
+### Usage Examples
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+
+# Set up a table
+db.create_table("products", {
+    "id": "int",
+    "name": "str",
+    "price": "float",
+}, primary_key="id")
+
+# Populate it
+db.insert("products", {"id": 1, "name": "Widget", "price": 9.99})
+db.insert("products", {"id": 2, "name": "Gadget", "price": 24.99})
+db.insert("products", {"id": 3, "name": "Doohickey", "price": 4.99})
+
+# Query with a predicate
+cheap = db.select("products", where=lambda r: r["name"] == "Doohickey")
+# => [{"id": 3, "name": "Doohickey", "price": 4.99}]
+
+# Select specific columns
+names = db.select("products", columns=["name"])
+# => [{"name": "Widget"}, {"name": "Gadget"}, {"name": "Doohickey"}]
+
+# Update a price
+db.update("products", values={"price": 19.99}, where=lambda r: r["id"] == 1)
+
+# Remove a product
+db.delete("products", where=lambda r: r["id"] == 2)
+
+# Verify
+remaining = db.select("products")
+# => [{"id": 1, ...}, {"id": 3, ...}]
+
+# Clean up
+db.drop_table("products")
+```
