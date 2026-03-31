@@ -5,7 +5,7 @@
   "branch": "egg/pipeline-4f4210e7/work",
   "base_branch": null,
   "prompt": "Implement LeetCode 239 - Sliding Window Maximum. Given an array of integers nums and a sliding window of size k, return the maximum value in each window position as the window slides from left to right. Use an optimal O(n) monotonic deque approach.",
-  "status": "running",
+  "status": "complete",
   "current_phase": "pr",
   "config": {
     "auto_create_pr": true,
@@ -173,16 +173,18 @@
     },
     "pr": {
       "phase": "pr",
-      "status": "running",
+      "status": "complete",
       "started_at": "2026-03-31T15:18:09.904626Z",
       "work_started_at": "2026-03-31T15:18:09.905291Z",
-      "completed_at": null,
+      "completed_at": "2026-03-31T15:18:52.522376Z",
       "containers": [],
       "agents": [],
       "review_cycles": 0,
       "hitl_review_cycles": 0,
       "cycle_timings": [],
-      "artifacts": {},
+      "artifacts": {
+        "pr_url": "https://github.com/jwbron/testing/pull/4"
+      },
       "error": null,
       "hitl_feedback": null,
       "phase_start_sha": "2e1be248bb1883d05e2bac1c2ac1cc659fb08f94"
@@ -190,7 +192,7 @@
   },
   "decisions": [],
   "created_at": "2026-03-31T15:13:03.769592Z",
-  "updated_at": "2026-03-31T15:18:09.905359Z",
+  "updated_at": "2026-03-31T15:19:11.744210Z",
   "contract_synced": true,
   "network_mode": null,
   "mode": "issue",
@@ -198,5 +200,5 @@
   "error": null,
   "analysis": null,
   "plan": null,
-  "version": 13
+  "version": 16
 }
