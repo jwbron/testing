@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges. The project
+uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,11 +51,13 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── inmemory_db.py           # In-Memory Database solution
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   └── test_inmemory_db.py          # In-Memory Database tests
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -103,6 +105,32 @@ interval overlaps the previous one, otherwise append.
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.
+
+### In-Memory Database
+
+A simple in-memory relational database supporting typed tables with primary key
+constraints and full CRUD operations with flexible filtering.
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+db.create_table("users", {"id": int, "name": str}, primary_key="id")
+db.insert("users", {"id": 1, "name": "Alice"})
+db.select("users", where={"name": "Alice"})
+# => [{"id": 1, "name": "Alice"}]
+```
+
+**Features**: Typed column validation, primary key uniqueness enforcement,
+dict-based equality filters and callable predicates, copy-on-read row isolation.
+
+| Operation | Time |
+|-----------|------|
+| `insert` | O(n) &mdash; primary key scan |
+| `select` / `update` / `delete` | O(n) &mdash; full table scan |
+
+See [docs/challenges.md](docs/challenges.md#in-memory-database) for the full
+write-up including API reference, exception hierarchy, and test coverage.
 
 ## CI
 

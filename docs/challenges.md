@@ -115,3 +115,199 @@ assert result == [[1, 6], [8, 10], [15, 18]]
 result = merge_intervals([[-5, -1], [-3, 2], [4, 8]])
 assert result == [[-5, 2], [4, 8]]
 ```
+
+---
+
+## In-Memory Database
+
+**Module**: `src/challenges/inmemory_db.py`
+**Tests**: `tests/test_inmemory_db.py`
+
+### Problem Statement
+
+Build a simple in-memory relational database that supports creating and dropping
+tables with typed columns, primary key constraint enforcement, and full CRUD
+operations (insert, select, update, delete) with filtering via where clauses.
+
+### API
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+```
+
+#### `create_table(name, columns, primary_key=None)`
+
+Create a new table with typed columns and an optional primary key.
+
+```python
+def create_table(
+    self,
+    name: str,
+    columns: dict[str, type],
+    primary_key: str | None = None,
+) -> None:
+```
+
+- `columns`: mapping of column name to Python type (e.g. `{"id": int, "name": str}`)
+- `primary_key`: column name to enforce uniqueness, or `None`
+- Raises `TableExistsError` if the table already exists
+- Raises `ValueError` if the primary key column is not in the column definitions
+
+#### `drop_table(name)`
+
+Drop an existing table and its data.
+
+```python
+def drop_table(self, name: str) -> None:
+```
+
+- Raises `TableNotFoundError` if the table does not exist
+
+#### `insert(table, row)`
+
+Insert a row into a table. The row must contain exactly the columns defined in
+the schema, and each value must match the declared type.
+
+```python
+def insert(self, table: str, row: dict[str, Any]) -> None:
+```
+
+- Raises `TableNotFoundError` if the table does not exist
+- Raises `TypeValidationError` if a value does not match its column type
+- Raises `PrimaryKeyViolationError` if a duplicate primary key is inserted
+- Raises `ValueError` if the row has unknown or missing columns
+
+#### `select(table, where=None)`
+
+Select rows from a table with optional filtering. Returns copies of rows (not
+references to internal data).
+
+```python
+def select(
+    self,
+    table: str,
+    where: dict[str, Any] | Callable[[dict[str, Any]], bool] | None = None,
+) -> list[dict[str, Any]]:
+```
+
+The `where` parameter accepts:
+- `None` — return all rows
+- A `dict` — equality matching on column values (all conditions must match)
+- A `callable` — arbitrary predicate function receiving a row dict
+
+#### `update(table, values, where=None)`
+
+Update matching rows, returning the count of rows modified.
+
+```python
+def update(
+    self,
+    table: str,
+    values: dict[str, Any],
+    where: dict[str, Any] | Callable[[dict[str, Any]], bool] | None = None,
+) -> int:
+```
+
+- Raises `TypeValidationError` if a new value does not match its column type
+- Raises `ValueError` if values references unknown columns
+
+#### `delete(table, where=None)`
+
+Delete matching rows, returning the count of rows removed.
+
+```python
+def delete(
+    self,
+    table: str,
+    where: dict[str, Any] | Callable[[dict[str, Any]], bool] | None = None,
+) -> int:
+```
+
+### Exception Hierarchy
+
+All database exceptions inherit from `DatabaseError`:
+
+| Exception | Raised when |
+|-----------|-------------|
+| `DatabaseError` | Base class for all database errors |
+| `TableExistsError` | Creating a table that already exists |
+| `TableNotFoundError` | Referencing a table that does not exist |
+| `PrimaryKeyViolationError` | Inserting a duplicate primary key value |
+| `TypeValidationError` | A column value does not match its declared type |
+
+### Design
+
+- **Storage**: Tables are stored as `dict[str, list[dict]]` — each table name
+  maps to a list of row dicts.
+- **Schemas**: Column types are tracked per-table in a parallel `dict[str, dict[str, type]]`.
+- **Primary keys**: Tracked per-table; uniqueness is checked by scanning existing
+  rows on each insert.
+- **Row isolation**: `select()` returns shallow copies of row dicts, so mutating
+  returned rows does not affect stored data. `insert()` also stores a copy.
+- **Where clauses**: Polymorphic — accepts `None`, a dict of equality conditions,
+  or a callable predicate. Shared across `select`, `update`, and `delete`.
+
+### Complexity
+
+| Operation | Time | Space |
+|-----------|------|-------|
+| `create_table` | O(1) | O(c) where c = number of columns |
+| `drop_table` | O(1) | — |
+| `insert` | O(n) | O(c) per row (n = existing rows, for PK check) |
+| `select` | O(n) | O(m) where m = matching rows |
+| `update` | O(n) | O(1) |
+| `delete` | O(n) | O(n) (rebuilds list) |
+
+### Test Coverage
+
+The test suite (`tests/test_inmemory_db.py`) is organized by operation:
+
+| Category | Cases |
+|----------|-------|
+| **Create table** | Basic creation, without primary key, duplicate table error, invalid PK error |
+| **Drop table** | Drop existing, drop nonexistent error, recreate after drop |
+| **Insert** | Single row, multiple rows, duplicate PK error, wrong type error, missing column error, extra column error, nonexistent table error, duplicates without PK |
+| **Select** | All rows, dict filter, callable filter, no match, returns copies, nonexistent table error, multiple conditions |
+| **Update** | Matching rows, all rows, no match, wrong type error, unknown column error, nonexistent table error |
+| **Delete** | Matching rows, all rows, no match, callable filter, nonexistent table error |
+
+### Usage Examples
+
+```python
+from challenges.inmemory_db import InMemoryDB
+
+db = InMemoryDB()
+
+# Create a table with typed columns and a primary key
+db.create_table("users", {"id": int, "name": str, "age": int}, primary_key="id")
+
+# Insert rows
+db.insert("users", {"id": 1, "name": "Alice", "age": 30})
+db.insert("users", {"id": 2, "name": "Bob", "age": 25})
+db.insert("users", {"id": 3, "name": "Charlie", "age": 35})
+
+# Select all rows
+all_users = db.select("users")
+# => [{"id": 1, "name": "Alice", "age": 30}, ...]
+
+# Filter with a dict (equality matching)
+alice = db.select("users", where={"name": "Alice"})
+# => [{"id": 1, "name": "Alice", "age": 30}]
+
+# Filter with a callable (arbitrary predicate)
+seniors = db.select("users", where=lambda r: r["age"] >= 30)
+# => [{"id": 1, ...}, {"id": 3, ...}]
+
+# Update matching rows (returns count of updated rows)
+count = db.update("users", {"age": 31}, where={"name": "Alice"})
+# => 1
+
+# Delete matching rows (returns count of deleted rows)
+count = db.delete("users", where={"name": "Bob"})
+# => 1
+
+# Drop the table
+db.drop_table("users")
+```
