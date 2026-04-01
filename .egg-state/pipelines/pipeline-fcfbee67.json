@@ -170,11 +170,27 @@
       "error": null,
       "hitl_feedback": null,
       "phase_start_sha": "b0b94c1c64997157631b30d9e3a2942d7eebed90"
+    },
+    "pr": {
+      "phase": "pr",
+      "status": "running",
+      "started_at": "2026-04-01T04:22:45.078614Z",
+      "work_started_at": "2026-04-01T04:22:45.079767Z",
+      "completed_at": null,
+      "containers": [],
+      "agents": [],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [],
+      "artifacts": {},
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": "7471735dfc8283349d0b631d4b18b4ef52a9ca7d"
     }
   },
   "decisions": [],
   "created_at": "2026-04-01T04:03:20.786917Z",
-  "updated_at": "2026-04-01T04:22:45.069567Z",
+  "updated_at": "2026-04-01T04:22:45.079893Z",
   "contract_synced": true,
   "network_mode": null,
   "mode": "issue",
@@ -182,5 +198,5 @@
   "error": null,
   "analysis": "### Task Analysis\n\n**Problem statement**: Build a simple in-memory database as a coding exercise — a self-contained Python module that supports basic CRUD operations, table creation, and querying.\n\n**System context**: The repo is a coding challenges collection. Each challenge lives as a module under `src/challenges/` with corresponding tests in `tests/`. Python 3.12+, pytest for testing, ruff for linting.\n\n**Files affected**:\n- `src/challenges/inmemory_db.py` — new module implementing the in-memory database\n- `tests/test_inmemory_db.py` — tests covering CRUD, querying, and edge cases\n\n**Scope**: A single-module implementation supporting:\n- Create/drop tables with typed columns\n- Insert, select, update, delete rows\n- Filtering (where clauses) on select/update/delete\n- Primary key constraint enforcement\n\n**Risks / edge cases**: None significant — this is a new standalone module with no dependencies on existing code.",
   "plan": "# Plan: Simple In-Memory Database\n\n## Summary\n\nImplement a simple in-memory database as a Python module following the repo's existing coding challenge pattern. The database will store tables as dictionaries of rows, support typed columns with primary key constraints, and provide CRUD operations with basic filtering. This is a standalone exercise with no dependencies on existing code.\n\n**Risks / edge cases**: None identified — standalone new module.\n\n## Implementation\n\n### Phase 1: Implement\n\nBuild the in-memory database module and comprehensive tests.\n\n**Tasks**:\n1. **[task-1-1]** Create `src/challenges/inmemory_db.py` with an `InMemoryDB` class supporting `create_table(name, columns, primary_key)`, `drop_table(name)`, `insert(table, row)`, `select(table, where)`, `update(table, values, where)`, `delete(table, where)`. Tables stored as `dict[str, list[dict]]`. Columns defined as `dict[str, type]`. Primary key enforces uniqueness on insert. Acceptance: All CRUD operations work correctly.\n2. **[task-1-2]** Create `tests/test_inmemory_db.py` with pytest tests covering: table creation/dropping, insert with primary key enforcement, select with and without filters, update with filters, delete with filters, error cases (duplicate table, missing table, type mismatches, duplicate primary key). Acceptance: All tests pass via `pytest`.\n\n```yaml\n# yaml-tasks\npr:\n  title: \"Add simple in-memory database coding exercise\"\n  description: |\n    Implements a simple in-memory database module as a coding exercise.\n    Supports table creation with typed columns, primary key constraints,\n    and full CRUD operations with filtering.\n  test_plan: |\n    - Automated: pytest tests covering all CRUD operations, constraints, and error cases\n    - Manual: Run `pytest tests/test_inmemory_db.py -v` to verify all tests pass\n  manual_steps: |\n    Pre-merge: None\n    Post-merge: None\nphases:\n  - id: 1\n    name: Implement\n    goal: \"Build the in-memory database module and tests\"\n    tasks:\n      - id: task-1-1\n        description: \"Create `src/challenges/inmemory_db.py` with an `InMemoryDB` class supporting `create_table(name, columns, primary_key)`, `drop_table(name)`, `insert(table, row)`, `select(table, where)`, `update(table, values, where)`, `delete(table, where)`. Tables stored as `dict[str, list[dict]]`. Columns defined as `dict[str, type]`. Primary key enforces uniqueness on insert. Type validation on insert rejects wrong column types.\"\n        acceptance: \"All CRUD operations work correctly — insert stores rows, select retrieves with optional filtering, update modifies matched rows, delete removes matched rows\"\n        files:\n          - src/challenges/inmemory_db.py\n      - id: task-1-2\n        description: \"Create `tests/test_inmemory_db.py` with pytest tests covering: table creation/dropping, insert with primary key enforcement, select with and without filters, update with filters, delete with filters, error cases (duplicate table, missing table, type mismatches, duplicate primary key).\"\n        acceptance: \"All tests pass via pytest, covering CRUD operations, primary key constraints, type validation, and error cases\"\n        files:\n          - tests/test_inmemory_db.py\n```",
-  "version": 11
+  "version": 13
 }
