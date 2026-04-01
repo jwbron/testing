@@ -179,6 +179,7 @@ class InMemoryDB:
         Raises:
             TableNotFoundError: If the table does not exist.
             TypeValidationError: If a new value does not match its column type.
+            PrimaryKeyViolationError: If updating a PK would create duplicates.
             ValueError: If values references unknown columns.
         """
         self._ensure_table(table)
@@ -195,7 +196,28 @@ class InMemoryDB:
                     f"got {type(val).__name__}"
                 )
 
+        pk = self._primary_keys[table]
         predicate = self._build_predicate(where)
+
+        # If the update touches the primary key, validate uniqueness first
+        if pk is not None and pk in values:
+            new_pk_value = values[pk]
+            matching = [row for row in self._tables[table] if predicate(row)]
+            non_matching = [
+                row for row in self._tables[table] if not predicate(row)
+            ]
+            # Check if the new PK value conflicts with any non-matching row
+            for row in non_matching:
+                if row[pk] == new_pk_value:
+                    raise PrimaryKeyViolationError(
+                        f"Duplicate primary key '{pk}'={new_pk_value!r}"
+                    )
+            # Also check if multiple matching rows would get the same PK
+            if len(matching) > 1:
+                raise PrimaryKeyViolationError(
+                    f"Duplicate primary key '{pk}'={new_pk_value!r}"
+                )
+
         count = 0
         for row in self._tables[table]:
             if predicate(row):
