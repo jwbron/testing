@@ -3,7 +3,7 @@
 ## Merge Intervals
 
 **Module**: `src/challenges/merge_intervals.py`
-**Tests**: `tests/test_merge_intervals.py`, `tests/test_merge_intervals_extended.py`
+**Tests**: `tests/test_merge_intervals.py`, `tests/test_merge_intervals_gaps.py`
 
 ### Problem Statement
 
@@ -71,7 +71,7 @@ The test suite covers a comprehensive set of scenarios:
 | Single-point interval | `[[5, 5]]` | `[[5, 5]]` |
 | Nested intervals | `[[1, 10], [3, 5], [6, 8]]` | `[[1, 10]]` |
 
-**Extended scenarios** (from `test_merge_intervals_extended.py`)
+**Extended scenarios** (from `test_merge_intervals_gaps.py`)
 
 | Case | Input | Expected Output |
 |------|-------|-----------------|

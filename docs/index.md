@@ -23,5 +23,5 @@ solutions to classic coding challenges, built with modern tooling.
 
 | Challenge | Module | Tests | Docs |
 |-----------|--------|-------|------|
-| Merge Intervals | `src/challenges/merge_intervals.py` | `tests/test_merge_intervals.py`, `tests/test_merge_intervals_extended.py` | [challenges.md#merge-intervals](challenges.md#merge-intervals) |
-| In-Memory Database | `src/challenges/inmemory_db.py` | `tests/test_inmemory_db.py` | [challenges.md#in-memory-database](challenges.md#in-memory-database) |
+| Merge Intervals | `src/challenges/merge_intervals.py` | `tests/test_merge_intervals.py`, `tests/test_merge_intervals_gaps.py` | [challenges.md#merge-intervals](challenges.md#merge-intervals) |
+| In-Memory Database | `src/challenges/inmemory_db.py` | `tests/test_inmemory_db.py`, `tests/test_inmemory_db_gaps.py` | [challenges.md#in-memory-database](challenges.md#in-memory-database) |

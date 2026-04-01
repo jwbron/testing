@@ -56,8 +56,9 @@ testing/
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
-│   └── test_inmemory_db.py          # In-Memory Database tests
+│   ├── test_merge_intervals_gaps.py # Extended edge-case tests
+│   ├── test_inmemory_db.py          # In-Memory Database tests
+│   └── test_inmemory_db_gaps.py     # Extended In-Memory Database tests
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
