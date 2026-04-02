@@ -630,3 +630,355 @@ cache.get(2)       # => -1 (evicted)
 3. **Integer keys and values** keep the interface simple and focused on the
    core cache-eviction algorithm. The pattern generalizes trivially to
    arbitrary hashable keys and values.
+
+---
+
+## MicroGPT
+
+**Module**: `src/challenges/microgpt.py`
+**Tests**: `tests/test_microgpt.py`
+
+### Background
+
+This module is a refactored version of Andrej Karpathy's
+[microgpt](https://karpathy.github.io/2026/02/12/microgpt/) — a ~200-line
+pure-Python GPT implementation that trains and runs inference with zero
+external dependencies. The original demonstrates that the complete algorithm
+behind modern language models (autograd, tokenizer, transformer, optimizer,
+and inference) fits in a single self-contained script.
+
+The refactored version preserves the original's educational clarity while
+restructuring it into a modular, testable library with Pydantic configuration
+models, full type annotations, and reusable functions.
+
+**Original source**:
+[gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95](https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95)
+
+### Architecture Overview
+
+The module is organized into five logical groups:
+
+| Component | Description |
+|-----------|-------------|
+| **Configuration** | Pydantic models (`GPTConfig`, `AdamConfig`, `SampleConfig`) replacing scattered global constants |
+| **Scalar autograd** | `Scalar` class (renamed from `Value`) — a computation-graph node with reverse-mode automatic differentiation |
+| **NN primitives** | `linear`, `softmax`, `rmsnorm` — the building blocks of the transformer |
+| **Tokenizer** | `build_vocab`, `encode`, `decode`, `load_dataset` — character-level tokenization with no import-time side effects |
+| **Model** | `init_state_dict`, `gpt`, `adam_step`, `train`, `sample` — initialization, forward pass, optimization, and inference |
+
+### API Reference
+
+#### Configuration Models
+
+All configuration is managed through Pydantic `BaseModel` subclasses with
+defaults matching the original script.
+
+```python
+from challenges.microgpt import GPTConfig, AdamConfig, SampleConfig
+
+# GPT model configuration
+config = GPTConfig(
+    n_layer=1,        # number of transformer layers (default: 1)
+    n_embd=16,        # embedding dimension (default: 16)
+    block_size=16,    # maximum context length (default: 16)
+    n_head=4,         # number of attention heads (default: 4)
+    vocab_size=27,    # vocabulary size (set after building vocab)
+)
+config.head_dim      # => 4 (computed: n_embd // n_head)
+
+# Adam optimizer configuration
+adam_config = AdamConfig(
+    learning_rate=0.01,  # default: 0.01
+    beta1=0.85,          # default: 0.85
+    beta2=0.99,          # default: 0.99
+    eps=1e-8,            # default: 1e-8
+)
+
+# Sampling/inference configuration
+sample_config = SampleConfig(
+    temperature=0.5,   # default: 0.5
+    max_tokens=16,     # maximum tokens to generate (default matches block_size)
+    num_samples=20,    # number of samples to generate (default: 20)
+)
+```
+
+#### Scalar — Autograd Engine
+
+`Scalar` is a scalar-valued node in a computation graph that supports
+reverse-mode automatic differentiation (backpropagation). It is renamed from
+`Value` in the original script for clarity.
+
+```python
+from challenges.microgpt import Scalar
+
+# Create scalar values
+a = Scalar(2.0)
+b = Scalar(3.0)
+
+# Arithmetic operations build a computation graph
+c = a * b + Scalar(1.0)   # c.data == 7.0
+
+# Backpropagation computes gradients
+c.backward()
+print(a.grad)  # 3.0 (dc/da = b)
+print(b.grad)  # 2.0 (dc/db = a)
+```
+
+**Supported operations:**
+
+| Operation | Forward | Gradient (w.r.t. self) |
+|-----------|---------|----------------------|
+| `a + b` | `a.data + b.data` | `1` |
+| `a * b` | `a.data * b.data` | `b.data` |
+| `a ** n` | `a.data ** n` | `n * a.data^(n-1)` |
+| `a.log()` | `log(a.data)` | `1 / a.data` |
+| `a.exp()` | `exp(a.data)` | `exp(a.data)` |
+| `a.relu()` | `max(0, a.data)` | `1 if a.data > 0 else 0` |
+| `-a` | `-a.data` | `-1` |
+| `a / b` | via `a * b**-1` | — |
+| `a - b` | via `a + (-b)` | — |
+
+Mixed `Scalar`/`float` operations are supported in both directions
+(`Scalar + float` and `float + Scalar`) via `__radd__`, `__rmul__`, etc.
+
+**Known limitation:** `__pow__` only supports constant (non-`Scalar`)
+exponents. `Scalar(2) ** 3` works, but `Scalar(2) ** Scalar(3)` does not.
+This is by design — the gradient formula `n * x^(n-1)` assumes `n` is constant.
+
+#### NN Primitives
+
+```python
+from challenges.microgpt import Scalar, linear, softmax, rmsnorm
+
+x = [Scalar(1.0), Scalar(2.0), Scalar(3.0)]
+
+# linear(x, w) — matrix-vector multiply
+# w is a list of rows; each row has the same length as x
+w = [[Scalar(1.0), Scalar(0.0), Scalar(0.0)],
+     [Scalar(0.0), Scalar(1.0), Scalar(0.0)]]
+y = linear(x, w)   # => [Scalar(1.0), Scalar(2.0)]
+
+# softmax(logits) — numerically stable softmax
+probs = softmax(x)  # sums to 1.0
+
+# rmsnorm(x) — root-mean-square normalization
+normed = rmsnorm(x)  # output has approximately unit RMS
+```
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `linear` | `(x: list[Scalar], w: list[list[Scalar]]) -> list[Scalar]` | Matrix-vector multiply (one dot product per row of `w`) |
+| `softmax` | `(logits: list[Scalar]) -> list[Scalar]` | Numerically stable softmax (subtracts max before exp) |
+| `rmsnorm` | `(x: list[Scalar]) -> list[Scalar]` | Root-mean-square normalization with epsilon 1e-5 |
+
+#### Tokenizer
+
+The tokenizer converts text to integer token sequences using a character-level
+vocabulary. Unlike the original script, there are no import-time side effects
+— the dataset is loaded explicitly.
+
+```python
+from challenges.microgpt import build_vocab, encode, decode, load_dataset
+
+# Load training data (downloads from URL if file doesn't exist)
+docs = load_dataset("input.txt", url="https://raw.githubusercontent.com/karpathy/makemore/988aa59/names.txt")
+
+# Build vocabulary from documents
+vocab, bos = build_vocab(docs)
+
+# Encode text to token IDs (wraps with BOS tokens)
+token_ids = encode("hello", vocab, bos)
+
+# Decode token IDs back to text
+text = decode(token_ids, vocab, bos)  # => "hello"
+
+# Unknown characters raise ValueError
+encode("@", vocab, bos)  # raises ValueError
+```
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `build_vocab` | `(docs: list[str]) -> tuple[list[str], int]` | Extracts sorted unique characters; returns `(vocab, bos_token_id)` |
+| `encode` | `(text: str, vocab: list[str], bos: int) -> list[int]` | Tokenizes text, wrapping with BOS tokens |
+| `decode` | `(token_ids: list[int], vocab: list[str], bos: int) -> str` | Converts token IDs back to text (strips BOS tokens) |
+| `load_dataset` | `(path: str, url: str \| None = None) -> list[str]` | Reads lines from file; downloads from `url` if file is missing |
+
+#### Model Initialization and Forward Pass
+
+```python
+from challenges.microgpt import GPTConfig, init_state_dict, gpt
+
+config = GPTConfig(n_layer=1, n_embd=16, n_head=4, vocab_size=27)
+
+# Initialize all model weights
+state_dict = init_state_dict(config)
+# Keys: 'wte', 'wpe', 'lm_head', 'layer0.attn_wq', 'layer0.attn_wk',
+#        'layer0.attn_wv', 'layer0.attn_wo', 'layer0.mlp_fc1', 'layer0.mlp_fc2'
+
+# Forward pass (single token at a time)
+keys = [[] for _ in range(config.n_layer)]
+values = [[] for _ in range(config.n_layer)]
+logits = gpt(token_id=0, pos_id=0, keys=keys, values=values,
+             config=config, state_dict=state_dict)
+# logits is a list of vocab_size Scalar values
+```
+
+| Function | Description |
+|----------|-------------|
+| `init_state_dict(config)` | Creates all weight matrices (wte, wpe, lm_head, per-layer attention and MLP weights) with Gaussian initialization (std=0.08) |
+| `gpt(token_id, pos_id, keys, values, config, state_dict)` | Single-token transformer forward pass; returns `vocab_size` logits. Mutates `keys`/`values` for KV caching. |
+
+#### Training and Inference
+
+```python
+from challenges.microgpt import (
+    GPTConfig, AdamConfig, SampleConfig,
+    load_dataset, train, sample
+)
+
+# Load data and train
+docs = load_dataset("input.txt")
+config = GPTConfig(n_layer=1, n_embd=16, n_head=4, vocab_size=27)
+adam_config = AdamConfig(learning_rate=0.01)
+
+state_dict, vocab, bos = train(docs, config, adam_config, num_steps=1000)
+
+# Generate samples
+sample_config = SampleConfig(temperature=0.5, num_samples=10)
+samples = sample(state_dict, vocab, bos, config, sample_config)
+for s in samples:
+    print(s)
+```
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `adam_step` | `(params, m, v, step, config) -> None` | One Adam optimizer update step (in-place) |
+| `train` | `(docs, config, adam_config, num_steps) -> (state_dict, vocab, bos)` | Full training loop with linear learning-rate warmdown |
+| `sample` | `(state_dict, vocab, bos, config, sample_config) -> list[str]` | Temperature-controlled text generation |
+
+### Complexity
+
+Training is pure-Python scalar autograd — each operation creates a graph node.
+This is intentionally slow (educational, not production). Performance
+characteristics:
+
+| Operation | Complexity | Notes |
+|-----------|-----------|-------|
+| `Scalar.backward()` | O(V + E) | V = nodes, E = edges in the computation graph |
+| `linear(x, w)` | O(n × m) | n = output dim, m = input dim (all scalar ops) |
+| `softmax(logits)` | O(n) | Two passes: max + exp/normalize |
+| `gpt` (forward) | O(L × d² × T) | L = layers, d = embedding dim, T = sequence length |
+| `train` (one step) | O(B × L × d² × T²) | B = 1 (no batching), quadratic in sequence length |
+
+### Design Decisions
+
+1. **`Scalar` instead of `Value`**: The name `Scalar` better communicates that
+   each node holds a single floating-point value and participates in an
+   autograd computation graph. The original `Value` was ambiguous.
+
+2. **Pydantic for configuration**: `GPTConfig`, `AdamConfig`, and
+   `SampleConfig` use Pydantic `BaseModel` for validation and defaults.
+   `Scalar` is _not_ a Pydantic model because operator overloads (`__add__`,
+   `__mul__`, etc.) conflict with Pydantic's model semantics.
+
+3. **No import-time side effects**: The original script downloads a dataset and
+   initializes global model weights at import time. The refactored version
+   defers all I/O and initialization to explicit function calls.
+
+4. **Explicit config passing**: Functions like `gpt()` and `train()` accept
+   a `GPTConfig` parameter instead of relying on global variables, making
+   them independently testable with different configurations.
+
+5. **`__pow__` limited to constant exponents**: The gradient formula
+   `n * x^(n-1)` requires `n` to be a constant. Supporting `Scalar ** Scalar`
+   would require computing `x^y * ln(x)` for the exponent gradient, which
+   adds complexity with no benefit for the GPT use case.
+
+### Edge Cases
+
+The test suite covers:
+
+**Scalar autograd (9 tests):**
+
+| Test | Input | Expected |
+|------|-------|----------|
+| `test_scalar_add` | `Scalar(2) + Scalar(3)` | data=5, both grads=1.0 |
+| `test_scalar_mul` | `Scalar(3) * Scalar(4)` | data=12, grads=4.0/3.0 |
+| `test_scalar_pow` | `Scalar(2) ** 3` | data=8, grad=12.0 |
+| `test_scalar_relu_positive` | `Scalar(5).relu()` | data=5, grad=1.0 |
+| `test_scalar_relu_negative` | `Scalar(-3).relu()` | data=0, grad=0.0 |
+| `test_scalar_log` | `Scalar(1).log()` | data=0, grad=1.0 |
+| `test_scalar_exp` | `Scalar(0).exp()` | data=1, grad=1.0 |
+| `test_scalar_composite_backward` | multi-op chain | correct chain-rule grads |
+| `test_scalar_division` | `Scalar(6) / Scalar(3)` | data=2, correct grads |
+
+**NN primitives (5 tests):**
+
+| Test | Description |
+|------|-------------|
+| `test_linear_identity` | Identity matrix returns input unchanged |
+| `test_softmax_uniform` | Equal logits produce uniform distribution |
+| `test_softmax_sums_to_one` | Output probabilities sum to 1.0 |
+| `test_softmax_numerical_stability` | Large logits do not produce NaN |
+| `test_rmsnorm_unit_scale` | Output has approximately unit RMS |
+
+**Tokenizer (3 tests):**
+
+| Test | Description |
+|------|-------------|
+| `test_build_vocab` | Known input produces expected vocab and BOS ID |
+| `test_encode_decode_roundtrip` | `decode(encode(text)) == text` |
+| `test_encode_unknown_char_raises` | Unknown character raises `ValueError` |
+
+**GPT model and end-to-end (5 tests):**
+
+| Test | Description |
+|------|-------------|
+| `test_gpt_output_shape` | Forward pass returns `vocab_size` logits |
+| `test_gpt_deterministic` | Same inputs produce same outputs |
+| `test_training_loss_decreases` | 50 steps on tiny data shows loss decrease |
+| `test_sample_produces_valid_tokens` | Generated tokens are valid vocab indices |
+| `test_sample_respects_bos_termination` | Sampling stops at BOS token |
+
+All model tests use a tiny configuration (`n_embd=4, n_head=2, block_size=4,
+n_layer=1`) to keep test runtime under a few seconds.
+
+### Usage Examples
+
+```python
+from challenges.microgpt import (
+    GPTConfig, AdamConfig, SampleConfig, Scalar,
+    build_vocab, encode, decode, load_dataset,
+    linear, softmax, rmsnorm,
+    init_state_dict, gpt, train, sample,
+)
+
+# --- Scalar autograd ---
+x = Scalar(3.0)
+y = Scalar(4.0)
+z = x * y + x ** 2    # z.data == 21.0
+z.backward()
+print(x.grad)          # 10.0 (dz/dx = y + 2x = 4 + 6)
+print(y.grad)          # 3.0  (dz/dy = x)
+
+# --- Tokenizer ---
+docs = ["hello", "world"]
+vocab, bos = build_vocab(docs)
+tokens = encode("hello", vocab, bos)
+assert decode(tokens, vocab, bos) == "hello"
+
+# --- Full training pipeline ---
+docs = load_dataset("input.txt",
+    url="https://raw.githubusercontent.com/karpathy/makemore/988aa59/names.txt")
+config = GPTConfig(n_layer=1, n_embd=16, n_head=4)
+
+# vocab_size is determined from data
+vocab, bos = build_vocab(docs)
+config = GPTConfig(n_layer=1, n_embd=16, n_head=4, vocab_size=len(vocab) + 1)
+
+state_dict, vocab, bos = train(docs, config, AdamConfig(), num_steps=500)
+names = sample(state_dict, vocab, bos, config,
+               SampleConfig(temperature=0.5, num_samples=5))
+for name in names:
+    print(name)
+```
