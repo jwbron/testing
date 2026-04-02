@@ -1,0 +1,212 @@
+{
+  "schemaVersion": "1.0",
+  "issue": null,
+  "pipeline_id": "pipeline-35bd3a98",
+  "current_phase": "refine",
+  "acceptance_criteria": [],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Implement",
+      "status": "pending",
+      "review_cycles": 0,
+      "max_cycles": 3,
+      "escalated": false,
+      "escalation_reason": null,
+      "tasks": [
+        {
+          "id": "task-1-1",
+          "description": "Create `task_queue/models.py` \u2014 Define TaskStatus enum, Priority enum, RetryPolicy dataclass, and Task dataclass with validation and dict serialization",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All model classes importable, serialization round-trips correctly, validation rejects invalid inputs",
+          "files_affected": [
+            "task_queue/models.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-2",
+          "description": "Create `task_queue/scheduler.py` \u2014 DAG dependency manager with cycle detection (Kahn's algorithm), readiness checks, and cascading failure propagation. Thread-safe with locking",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Cycle detection rejects circular dependencies, tasks only ready when all deps complete, cascading failure propagates",
+          "files_affected": [
+            "task_queue/scheduler.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-3",
+          "description": "Create `task_queue/queue.py` \u2014 Thread-safe priority queue using threading.Condition, dependency-aware dequeuing, blocking get with timeout, priority ordering (critical > high > normal > low, FIFO within same priority)",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Correct priority ordering, blocking get works with timeout, dependency-aware dequeuing verified",
+          "files_affected": [
+            "task_queue/queue.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-4",
+          "description": "Create `task_queue/worker.py` \u2014 Worker pool with configurable thread count, task execution with handler callbacks, graceful and forceful shutdown support",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Workers execute tasks concurrently, graceful shutdown completes current tasks, forceful shutdown respects timeout",
+          "files_affected": [
+            "task_queue/worker.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-5",
+          "description": "Create `task_queue/retry.py` \u2014 Retry manager with fixed and exponential backoff, retry count tracking, dead-letter queue with inspect/replay/purge",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Failed tasks retry with correct backoff, dead-letter after max retries, DLQ operations work",
+          "files_affected": [
+            "task_queue/retry.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-6",
+          "description": "Create `task_queue/wal.py` \u2014 Append-only write-ahead log with JSON entries, sequence numbers, replay support, and partial-write recovery via truncation",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "WAL entries persist and replay in order, partial writes detected and truncated, truncate_after works",
+          "files_affected": [
+            "task_queue/wal.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-7",
+          "description": "Create `task_queue/snapshot.py` \u2014 Periodic state snapshots as JSON with sequence number coordination, atomic writes via temp-file + rename, recovery loading",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Snapshot captures full state, recovery from snapshot + WAL replay correct, atomic writes prevent corruption",
+          "files_affected": [
+            "task_queue/snapshot.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-8",
+          "description": "Create `task_queue/broker.py` \u2014 Central coordinator wiring queue, scheduler, workers, retry, WAL, and snapshots. Full public API: submit, get_task, wait_for, cancel, start, shutdown, recover",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Full lifecycle works end-to-end, state transitions emit WAL entries, recovery restores state",
+          "files_affected": [
+            "task_queue/broker.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-9",
+          "description": "Create `task_queue/__init__.py` \u2014 Export public API: Broker, Task, TaskStatus, Priority, RetryPolicy, and key exceptions",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All public classes importable from task_queue",
+          "files_affected": [
+            "task_queue/__init__.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-10",
+          "description": "Create comprehensive test suite in tests/test_task_queue/ with 200+ test methods across test_models.py, test_scheduler.py, test_queue.py, test_worker.py, test_retry.py, test_wal.py, test_snapshot.py, test_broker.py, test_integration.py",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All tests pass with pytest, 200+ test methods, no flaky failures, uses Events/Barriers for concurrency tests",
+          "files_affected": [
+            "tests/test_task_queue/test_models.py",
+            "tests/test_task_queue/test_scheduler.py",
+            "tests/test_task_queue/test_queue.py",
+            "tests/test_task_queue/test_worker.py",
+            "tests/test_task_queue/test_retry.py",
+            "tests/test_task_queue/test_wal.py",
+            "tests/test_task_queue/test_snapshot.py",
+            "tests/test_task_queue/test_broker.py",
+            "tests/test_task_queue/test_integration.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-11",
+          "description": "Create docs/task_queue.md with architecture overview, full API reference, usage examples, and getting-started guide. Update root README",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Documentation covers all public APIs, includes working code examples, explains component interactions",
+          "files_affected": [
+            "docs/task_queue.md",
+            "README.md"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        }
+      ],
+      "dependencies": [],
+      "review_feedback": []
+    }
+  ],
+  "decisions": [],
+  "workflow_owner": null,
+  "audit_log": [],
+  "refine_review_cycles": 0,
+  "refine_review_feedback": "",
+  "plan_review_cycles": 0,
+  "plan_review_feedback": "",
+  "pr": {
+    "title": "Add distributed task queue with threading, DAGs, and persistence",
+    "description": "Adds a new task_queue module implementing a distributed task queue system with real Python threading,\npriority scheduling, DAG-based task dependencies, retry logic with dead-letter queues, and crash\nrecovery via write-ahead logging and snapshots. Includes 200+ tests and comprehensive documentation.",
+    "test_plan": "- Automated: pytest tests/test_task_queue/ -v runs 200+ tests covering all components\n- Automated: Tests use threading synchronization primitives (Events, Barriers) for deterministic concurrency testing\n- Manual: Run the usage examples from docs/task_queue.md to verify they work as documented\n- Manual: Simulate crash recovery by killing a running broker and verifying state restores from WAL + snapshot",
+    "manual_steps": "Pre-merge: Run full test suite and verify no flaky failures across 3 consecutive runs\nPost-merge: None required"
+  },
+  "feedback": null,
+  "phase_configs": null,
+  "agent_executions": []
+}
