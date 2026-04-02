@@ -320,9 +320,9 @@ class TestDatabaseManagement:
         assert users.find_one({"item": "Widget"}) is None
         assert orders.find_one({"name": "Alice"}) is None
 
-    def test_create_collection(self) -> None:
+    def test_collection_creation(self) -> None:
         db = Database()
-        col = db.create_collection("users")
+        col = db.collection("users")
         assert col is not None
         col.insert_one({"name": "Alice"})
         assert col.count() == 1
