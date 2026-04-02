@@ -469,3 +469,164 @@ txn.update_one("users", {"name": "Alice"}, {"$set": {"age": 31}})
 txn.insert_one("users", {"name": "Dave", "age": 28, "tags": ["dev"]})
 txn.commit()
 ```
+
+---
+
+## LRU Cache
+
+**Module**: `src/challenges/lru_cache.py`
+**Tests**: `tests/test_lru_cache.py`
+
+### Problem Statement
+
+Design and implement a data structure for a
+[Least Recently Used (LRU) cache](https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU).
+The cache has a fixed capacity and supports two operations — `get` and `put` —
+both in **O(1)** average time.
+
+When the cache reaches capacity, the **least recently used** entry is evicted
+before inserting a new one. Accessing or updating an entry makes it the most
+recently used.
+
+This is a classic systems-design building block that appears frequently in
+coding interviews (e.g.,
+[LeetCode 146](https://leetcode.com/problems/lru-cache/)).
+
+### Architecture Overview
+
+The implementation combines two data structures for O(1) operations:
+
+| Component | Role |
+|-----------|------|
+| **Hash map** (`dict`) | O(1) key → node lookup |
+| **Doubly-linked list** | O(1) insertion, removal, and reordering to track access recency |
+
+Sentinel (dummy) head and tail nodes eliminate edge-case checks for empty-list
+or single-element operations, keeping the code clean and the logic uniform.
+
+```
+ head <-> node_A <-> node_B <-> node_C <-> tail
+ (sentinel)     most recent ... least recent     (sentinel)
+```
+
+### API Reference
+
+```python
+from challenges.lru_cache import LRUCache
+
+cache = LRUCache(capacity=2)
+
+# put(key, value) — insert or update an entry
+cache.put(1, 10)
+cache.put(2, 20)
+
+# get(key) — returns the value, or -1 if not found
+cache.get(1)   # => 10  (key 1 is now most-recently used)
+
+# Inserting beyond capacity evicts the LRU entry
+cache.put(3, 30)   # evicts key 2 (least recently used)
+cache.get(2)       # => -1  (evicted)
+```
+
+#### `LRUCache(capacity: int)`
+
+Create a new LRU cache with the given maximum capacity.
+
+- **capacity** — positive integer specifying the maximum number of key-value
+  pairs the cache can hold.
+
+#### `get(key: int) -> int`
+
+Retrieve the value associated with `key`.
+
+- Returns the value if the key exists, and marks it as **most recently used**.
+- Returns **-1** if the key is not in the cache.
+
+#### `put(key: int, value: int) -> None`
+
+Insert or update the key-value pair.
+
+- If the key already exists, its value is updated and it becomes the **most
+  recently used** entry. No eviction occurs.
+- If the key is new and the cache is at capacity, the **least recently used**
+  entry is evicted before the new entry is inserted.
+
+### Complexity
+
+| Operation | Time | Space |
+|-----------|------|-------|
+| `get` | O(1) | — |
+| `put` | O(1) | — |
+| Overall space | — | O(capacity) |
+
+Both operations are O(1) because the hash map provides constant-time lookup
+and the doubly-linked list provides constant-time insertion and removal.
+
+### Edge Cases
+
+The test suite covers the following scenarios:
+
+| Case | Description | Expected Behavior |
+|------|-------------|-------------------|
+| Basic get/put | Insert and retrieve values | Returns correct value |
+| Missing key | `get` on a key not in cache | Returns -1 |
+| Capacity eviction | Insert beyond capacity | LRU entry is evicted |
+| Access-order update | `get` updates recency | Accessed key is not evicted next |
+| Overwrite existing key | `put` with existing key | Value updated, no eviction |
+| Capacity-1 cache | Single-slot cache | Each new `put` evicts the previous entry |
+
+### Usage Examples
+
+```python
+from challenges.lru_cache import LRUCache
+
+# --- Basic usage ---
+cache = LRUCache(2)
+cache.put(1, 1)
+cache.put(2, 2)
+cache.get(1)       # => 1
+cache.put(3, 3)    # evicts key 2 (LRU)
+cache.get(2)       # => -1 (evicted)
+cache.get(3)       # => 3
+cache.put(4, 4)    # evicts key 1 (LRU)
+cache.get(1)       # => -1 (evicted)
+cache.get(3)       # => 3
+cache.get(4)       # => 4
+
+# --- Overwriting a key does not evict ---
+cache = LRUCache(2)
+cache.put(1, 10)
+cache.put(2, 20)
+cache.put(1, 100)  # updates key 1, no eviction
+cache.get(1)       # => 100
+cache.get(2)       # => 20  (still present)
+
+# --- Capacity-1 cache ---
+cache = LRUCache(1)
+cache.put(1, 1)
+cache.put(2, 2)    # evicts key 1
+cache.get(1)       # => -1
+cache.get(2)       # => 2
+
+# --- get() refreshes recency ---
+cache = LRUCache(2)
+cache.put(1, 1)
+cache.put(2, 2)
+cache.get(1)       # refreshes key 1
+cache.put(3, 3)    # evicts key 2 (now LRU), not key 1
+cache.get(1)       # => 1  (still present)
+cache.get(2)       # => -1 (evicted)
+```
+
+### Design Decisions
+
+1. **Sentinel nodes** for the doubly-linked list head and tail eliminate
+   null-pointer checks and simplify insertion/removal logic.
+
+2. **Returns -1 for missing keys** rather than raising an exception, matching
+   the conventional LeetCode-style interface and making it easy to integrate
+   into algorithmic workflows.
+
+3. **Integer keys and values** keep the interface simple and focused on the
+   core cache-eviction algorithm. The pattern generalizes trivially to
+   arbitrary hashable keys and values.

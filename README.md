@@ -5,7 +5,7 @@ A Python project for solving coding challenges with modern tooling and CI.
 ## Overview
 
 This repository contains solutions to classic coding challenges, including
-**Merge Intervals** and an **In-Memory NoSQL Database**. The project uses modern Python tooling for a
+**Merge Intervals**, an **In-Memory NoSQL Database**, and an **LRU Cache**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -52,12 +52,14 @@ testing/
 │   └── challenges/
 │       ├── __init__.py
 │       ├── merge_intervals.py       # Merge Intervals solution
-│       └── nosql_db.py              # In-Memory NoSQL Database
+│       ├── nosql_db.py              # In-Memory NoSQL Database
+│       └── lru_cache.py             # LRU Cache implementation
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
 │   ├── test_merge_intervals_extended.py  # Extended edge-case tests
-│   └── test_nosql_db.py             # NoSQL database test suite
+│   ├── test_nosql_db.py             # NoSQL database test suite
+│   └── test_lru_cache.py            # LRU Cache test suite
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -141,6 +143,31 @@ Transactions with snapshot isolation
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 API reference, complexity analysis, and usage examples.
+
+### LRU Cache
+
+An O(1) Least Recently Used cache backed by a hash map and doubly-linked list
+with sentinel nodes. Supports `get` and `put` operations with automatic
+eviction of the least recently used entry when capacity is exceeded.
+
+```python
+from challenges.lru_cache import LRUCache
+
+cache = LRUCache(2)
+cache.put(1, 10)
+cache.put(2, 20)
+cache.get(1)       # => 10
+cache.put(3, 30)   # evicts key 2 (LRU)
+cache.get(2)       # => -1 (evicted)
+```
+
+| Metric | Value | Reason |
+|--------|-------|--------|
+| Time (`get`/`put`) | O(1) | Hash map + linked list |
+| Space | O(capacity) | Stores up to `capacity` entries |
+
+See [docs/challenges.md](docs/challenges.md) for the full write-up including
+architecture overview, API reference, and edge cases.
 
 ## CI
 

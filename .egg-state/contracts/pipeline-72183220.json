@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "issue": null,
+  "pipeline_id": "pipeline-72183220",
+  "current_phase": "refine",
+  "acceptance_criteria": [],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Implement",
+      "status": "pending",
+      "review_cycles": 0,
+      "max_cycles": 3,
+      "escalated": false,
+      "escalation_reason": null,
+      "tasks": [
+        {
+          "id": "task-1-1",
+          "description": "Create `src/challenges/lru_cache.py` with an `LRUCache` class using a doubly-linked list + dict. Methods: `__init__(capacity: int)`, `get(key: int) -> int` (returns value or -1), `put(key: int, value: int) -> None` (evicts LRU entry when at capacity). Use sentinel head/tail nodes for the doubly-linked list to simplify edge cases.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "get() returns correct value and updates recency; put() inserts, updates, and evicts LRU when at capacity; all operations are O(1)",
+          "files_affected": [
+            "src/challenges/lru_cache.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-2",
+          "description": "Create `tests/test_lru_cache.py` with tests for: basic get/put, capacity eviction (verify LRU item is evicted), access-order update after get, capacity-1 cache, get on missing key returns -1, overwrite existing key updates value without eviction",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All tests pass and cover the documented behaviors",
+          "files_affected": [
+            "tests/test_lru_cache.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        }
+      ],
+      "dependencies": [],
+      "review_feedback": []
+    }
+  ],
+  "decisions": [],
+  "workflow_owner": null,
+  "audit_log": [],
+  "refine_review_cycles": 0,
+  "refine_review_feedback": "",
+  "plan_review_cycles": 0,
+  "plan_review_feedback": "",
+  "pr": {
+    "title": "Add LRU Cache coding challenge",
+    "description": "Adds a new coding challenge implementing an LRU Cache with O(1) get/put\noperations using a doubly-linked list and hash map, with comprehensive tests.",
+    "test_plan": "- Automated: pytest tests/test_lru_cache.py covers get, put, eviction, access order, edge cases\n- Manual: Review that implementation uses O(1) data structures (linked list + dict)",
+    "manual_steps": ""
+  },
+  "feedback": null,
+  "phase_configs": null,
+  "agent_executions": []
+}
