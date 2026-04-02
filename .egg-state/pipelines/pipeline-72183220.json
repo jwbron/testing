@@ -1,0 +1,186 @@
+{
+  "id": "pipeline-72183220",
+  "issue_number": null,
+  "repo": "jwbron/testing",
+  "branch": "egg/pipeline-72183220/work",
+  "base_branch": null,
+  "prompt": "Add a new coding challenge: LRU Cache implementation in src/challenges/lru_cache.py with tests in tests/test_lru_cache.py",
+  "status": "running",
+  "current_phase": "pr",
+  "config": {
+    "auto_create_pr": true,
+    "parallel_agents": true,
+    "max_review_cycles": 3,
+    "max_hitl_review_cycles": 3,
+    "hitl_gates": false,
+    "concurrent_execution": false,
+    "concurrent_phases": [
+      "refine",
+      "plan",
+      "implement"
+    ],
+    "max_concurrent_agents": 6,
+    "message_poll_hint_seconds": 30,
+    "consensus_timeout_minutes": 30,
+    "agent_idle_timeout_minutes": 60,
+    "overseer_enabled": true,
+    "orchestrator_heartbeat_timeout_seconds": 120,
+    "orchestrator_error_repeat_threshold": 3,
+    "orchestrator_message_rate_limit": 20,
+    "overseer_poll_interval_seconds": 30,
+    "overseer_max_redirects_before_escalation": 2,
+    "overseer_decision_maker_model": "sonnet",
+    "overseer_max_respawns": 3,
+    "overseer_rerun_min_work_seconds": 60,
+    "overseer_hitl_propagation_timeout_seconds": 300,
+    "start_phase": "implement"
+  },
+  "phases": {
+    "implement": {
+      "phase": "implement",
+      "status": "complete",
+      "started_at": "2026-04-02T19:14:01.480023Z",
+      "work_started_at": "2026-04-02T19:14:01.481296Z",
+      "completed_at": "2026-04-02T19:19:51.849341Z",
+      "containers": [
+        {
+          "container_id": "ef045cfd21753188c42682b0b01636c68b6b23df392283493470a28dbf462d4b",
+          "container_name": "pipeline-72183220-reviewer_code",
+          "status": "exited",
+          "started_at": "2026-04-02T19:14:01.755464Z",
+          "exited_at": "2026-04-02T19:19:50.103082Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_code",
+          "session_token": null
+        },
+        {
+          "container_id": "772d60901ea30d5373f69a83ea6aaa3fc1488645fe85481b0a8fd7b9cf0f1a95",
+          "container_name": "pipeline-72183220-reviewer_contract",
+          "status": "exited",
+          "started_at": "2026-04-02T19:14:01.755478Z",
+          "exited_at": "2026-04-02T19:19:50.103085Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_contract",
+          "session_token": null
+        },
+        {
+          "container_id": "3814ce5e6fb4be4211229147bb2a8ad98b9189ca89ccad143dc6ec9a382d5870",
+          "container_name": "pipeline-72183220-documenter",
+          "status": "exited",
+          "started_at": "2026-04-02T19:14:01.755483Z",
+          "exited_at": "2026-04-02T19:19:50.103087Z",
+          "exit_code": 0,
+          "agent_role": "documenter",
+          "session_token": null
+        },
+        {
+          "container_id": "26f188bc789b99b322248565bfdc8e1024635cf4ea67f43bfba079ce3180481a",
+          "container_name": "pipeline-72183220-tester",
+          "status": "exited",
+          "started_at": "2026-04-02T19:14:01.755487Z",
+          "exited_at": "2026-04-02T19:19:50.103090Z",
+          "exit_code": 0,
+          "agent_role": "tester",
+          "session_token": null
+        },
+        {
+          "container_id": "e3b88bec616c338095c03e6dba23accce05820acb37d601241a2234a7dfbc86f",
+          "container_name": "pipeline-72183220-coder",
+          "status": "exited",
+          "started_at": "2026-04-02T19:14:01.755491Z",
+          "exited_at": "2026-04-02T19:19:50.103093Z",
+          "exit_code": 0,
+          "agent_role": "coder",
+          "session_token": null
+        }
+      ],
+      "agents": [
+        {
+          "role": "reviewer_code",
+          "status": "complete",
+          "container_id": "ef045cfd21753188c42682b0b01636c68b6b23df392283493470a28dbf462d4b",
+          "started_at": "2026-04-02T19:14:01.755473Z",
+          "completed_at": "2026-04-02T19:19:50.103056Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "reviewer_contract",
+          "status": "complete",
+          "container_id": "772d60901ea30d5373f69a83ea6aaa3fc1488645fe85481b0a8fd7b9cf0f1a95",
+          "started_at": "2026-04-02T19:14:01.755480Z",
+          "completed_at": "2026-04-02T19:19:50.103065Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "documenter",
+          "status": "complete",
+          "container_id": "3814ce5e6fb4be4211229147bb2a8ad98b9189ca89ccad143dc6ec9a382d5870",
+          "started_at": "2026-04-02T19:14:01.755485Z",
+          "completed_at": "2026-04-02T19:19:50.103068Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "tester",
+          "status": "complete",
+          "container_id": "26f188bc789b99b322248565bfdc8e1024635cf4ea67f43bfba079ce3180481a",
+          "started_at": "2026-04-02T19:14:01.755489Z",
+          "completed_at": "2026-04-02T19:19:50.103070Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "coder",
+          "status": "complete",
+          "container_id": "e3b88bec616c338095c03e6dba23accce05820acb37d601241a2234a7dfbc86f",
+          "started_at": "2026-04-02T19:14:01.755493Z",
+          "completed_at": "2026-04-02T19:19:50.103073Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        }
+      ],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [
+        {
+          "cycle": 0,
+          "started_at": "2026-04-02T19:14:01.481296Z",
+          "completed_at": null,
+          "commit_sha": "a17c58971d87e8683650ec986a43a2d505f45fb7"
+        }
+      ],
+      "artifacts": {},
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": "a17c58971d87e8683650ec986a43a2d505f45fb7"
+    }
+  },
+  "decisions": [],
+  "created_at": "2026-04-02T19:13:37.520336Z",
+  "updated_at": "2026-04-02T19:20:14.594022Z",
+  "contract_synced": true,
+  "network_mode": null,
+  "mode": "issue",
+  "pr_number": null,
+  "error": null,
+  "analysis": "### Task Analysis\n\n**Problem statement**: Add a new coding challenge to the repo — an LRU Cache implementation with `get`, `put`, capacity eviction, and O(1) operations using a doubly-linked list + hash map.\n\n**System context**: Challenges live in `src/challenges/` with corresponding tests in `tests/`. The existing challenges range from a simple algorithm (`merge_intervals.py`) to a complex data structure (`nosql_db.py`). An LRU Cache sits nicely in the middle.\n\n**Files affected**:\n- `src/challenges/lru_cache.py` — new module with the LRU cache implementation\n- `tests/test_lru_cache.py` — comprehensive tests\n\n**Risks / edge cases**: None — this is a new standalone module with no impact on existing code.",
+  "plan": "# Plan: LRU Cache Coding Challenge\n\n## Summary\n\nImplement an LRU (Least Recently Used) Cache as a new coding challenge. The cache supports O(1) `get` and `put` operations using a doubly-linked list for recency tracking and a hash map for key lookup. When capacity is exceeded, the least recently used entry is evicted. This is a classic data structure challenge that complements the existing merge_intervals (algorithm) and nosql_db (complex system) challenges.\n\n**Risks / edge cases**: None — standalone new module with no impact on existing code.\n\n## Implementation\n\n### Phase 1: Implement\n\nAdd the LRU Cache module and comprehensive tests.\n\n**Tasks**:\n1. **[task-1-1]** Create `src/challenges/lru_cache.py` with an `LRUCache` class that uses a doubly-linked list + dict for O(1) `get`/`put` with capacity-based eviction. The class should have `__init__(capacity)`, `get(key) -> int`, and `put(key, value) -> None` methods. Acceptance: get returns value and marks as recently used, or -1 if not found; put inserts/updates and evicts LRU when at capacity.\n2. **[task-1-2]** Create `tests/test_lru_cache.py` with tests covering: basic get/put, capacity eviction order, access-order updates after get, edge cases (capacity 1, missing keys, overwrite existing key value). Acceptance: all tests pass and cover the core behaviors.\n\n```yaml\n# yaml-tasks\npr:\n  title: \"Add LRU Cache coding challenge\"\n  description: |\n    Adds a new coding challenge implementing an LRU Cache with O(1) get/put\n    operations using a doubly-linked list and hash map, with comprehensive tests.\n  test_plan: |\n    - Automated: pytest tests/test_lru_cache.py covers get, put, eviction, access order, edge cases\n    - Manual: Review that implementation uses O(1) data structures (linked list + dict)\n  manual_steps: |\n    Pre-merge: None\n    Post-merge: None\nphases:\n  - id: 1\n    name: Implement\n    goal: \"Add LRU Cache implementation and tests\"\n    tasks:\n      - id: task-1-1\n        description: \"Create `src/challenges/lru_cache.py` with an `LRUCache` class using a doubly-linked list + dict. Methods: `__init__(capacity: int)`, `get(key: int) -> int` (returns value or -1), `put(key: int, value: int) -> None` (evicts LRU entry when at capacity). Use sentinel head/tail nodes for the doubly-linked list to simplify edge cases.\"\n        acceptance: \"get() returns correct value and updates recency; put() inserts, updates, and evicts LRU when at capacity; all operations are O(1)\"\n        files:\n          - src/challenges/lru_cache.py\n      - id: task-1-2\n        description: \"Create `tests/test_lru_cache.py` with tests for: basic get/put, capacity eviction (verify LRU item is evicted), access-order update after get, capacity-1 cache, get on missing key returns -1, overwrite existing key updates value without eviction\"\n        acceptance: \"All tests pass and cover the documented behaviors\"\n        files:\n          - tests/test_lru_cache.py\n```",
+  "version": 11
+}
