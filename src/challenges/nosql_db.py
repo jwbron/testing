@@ -641,7 +641,8 @@ class Collection:
 
         return None
 
-    def _apply_update(self, doc: dict[str, Any], update: dict[str, Any]) -> None:
+    @staticmethod
+    def _apply_update(doc: dict[str, Any], update: dict[str, Any]) -> None:
         """Apply update operators to *doc* in place."""
         for op, fields in update.items():
             if op == "$set":
@@ -856,17 +857,7 @@ class _TransactionCollection:
         for doc_id, doc in docs.items():
             self._txn._read_ids[self._name].add(doc_id)
             if self._qe.match(doc, filter):
-                # Apply update operators
-                for op, fields in update.items():
-                    if op == "$set":
-                        for f, v in fields.items():
-                            _set_nested(doc, f, v)
-                    elif op == "$inc":
-                        for f, amount in fields.items():
-                            cur = _get_nested(doc, f)
-                            if isinstance(cur, _MissingSentinel):
-                                cur = 0
-                            _set_nested(doc, f, cur + amount)
+                Collection._apply_update(doc, update)
                 self._txn._writes[self._name][doc_id] = doc
                 return 1
         return 0
