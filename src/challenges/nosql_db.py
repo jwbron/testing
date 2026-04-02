@@ -17,6 +17,7 @@ from typing import Any
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _generate_id() -> str:
     """Generate a unique document ID."""
     return str(uuid.uuid4())
@@ -86,6 +87,7 @@ _MISSING = _MissingSentinel()
 # ---------------------------------------------------------------------------
 # Query Engine
 # ---------------------------------------------------------------------------
+
 
 class QueryEngine:
     """Evaluate MongoDB-style query filters against documents.
@@ -166,6 +168,7 @@ class QueryEngine:
 # ---------------------------------------------------------------------------
 # Index Manager
 # ---------------------------------------------------------------------------
+
 
 class IndexManager:
     """Maintain secondary indexes on a collection.
@@ -309,6 +312,7 @@ def _sort_key(val: Any) -> tuple:
 # Aggregation Pipeline
 # ---------------------------------------------------------------------------
 
+
 class AggregationPipeline:
     """Execute MongoDB-style aggregation pipelines.
 
@@ -336,14 +340,10 @@ class AggregationPipeline:
 
     # --- stages ------------------------------------------------------------
 
-    def _stage_match(
-        self, docs: list[dict], expr: dict
-    ) -> list[dict]:
+    def _stage_match(self, docs: list[dict], expr: dict) -> list[dict]:
         return [d for d in docs if self._qe.match(d, expr)]
 
-    def _stage_group(
-        self, docs: list[dict], expr: dict
-    ) -> list[dict]:
+    def _stage_group(self, docs: list[dict], expr: dict) -> list[dict]:
         group_id_expr = expr["_id"]
         accumulators = {k: v for k, v in expr.items() if k != "_id"}
 
@@ -360,9 +360,7 @@ class AggregationPipeline:
             results.append(row)
         return results
 
-    def _stage_sort(
-        self, docs: list[dict], spec: dict
-    ) -> list[dict]:
+    def _stage_sort(self, docs: list[dict], spec: dict) -> list[dict]:
         for field, direction in reversed(list(spec.items())):
             docs = sorted(
                 docs,
@@ -375,19 +373,13 @@ class AggregationPipeline:
             )
         return docs
 
-    def _stage_limit(
-        self, docs: list[dict], n: int
-    ) -> list[dict]:
+    def _stage_limit(self, docs: list[dict], n: int) -> list[dict]:
         return docs[:n]
 
-    def _stage_skip(
-        self, docs: list[dict], n: int
-    ) -> list[dict]:
+    def _stage_skip(self, docs: list[dict], n: int) -> list[dict]:
         return docs[n:]
 
-    def _stage_project(
-        self, docs: list[dict], spec: dict
-    ) -> list[dict]:
+    def _stage_project(self, docs: list[dict], spec: dict) -> list[dict]:
         results = []
         for doc in docs:
             projected: dict[str, Any] = {}
@@ -405,9 +397,7 @@ class AggregationPipeline:
             results.append(projected)
         return results
 
-    def _stage_unwind(
-        self, docs: list[dict], path: str
-    ) -> list[dict]:
+    def _stage_unwind(self, docs: list[dict], path: str) -> list[dict]:
         if isinstance(path, str) and path.startswith("$"):
             path = path[1:]
         results = []
@@ -422,9 +412,7 @@ class AggregationPipeline:
                 results.append(copy.deepcopy(doc))
         return results
 
-    def _stage_count(
-        self, docs: list[dict], field_name: str
-    ) -> list[dict]:
+    def _stage_count(self, docs: list[dict], field_name: str) -> list[dict]:
         return [{field_name: len(docs)}]
 
     # --- helpers -----------------------------------------------------------
@@ -437,15 +425,11 @@ class AggregationPipeline:
             return None if isinstance(val, _MissingSentinel) else val
         if isinstance(expr, dict):
             return tuple(
-                sorted(
-                    (k, self._eval_group_id(doc, v)) for k, v in expr.items()
-                )
+                sorted((k, self._eval_group_id(doc, v)) for k, v in expr.items())
             )
         return expr
 
-    def _eval_accumulator(
-        self, docs: list[dict], expr: dict
-    ) -> Any:
+    def _eval_accumulator(self, docs: list[dict], expr: dict) -> Any:
         op = next(iter(expr))
         field_expr = expr[op]
 
@@ -486,6 +470,7 @@ class AggregationPipeline:
 # Collection
 # ---------------------------------------------------------------------------
 
+
 class Collection:
     """A named collection of documents.
 
@@ -519,23 +504,17 @@ class Collection:
         """Insert multiple documents. Returns a list of ``_id`` values."""
         return [self.insert_one(d) for d in documents]
 
-    def find_one(
-        self, filter: dict[str, Any] | None = None
-    ) -> dict[str, Any] | None:
+    def find_one(self, filter: dict[str, Any] | None = None) -> dict[str, Any] | None:
         """Return the first document matching *filter*, or ``None``."""
         for doc in self._iter_match(filter or {}):
             return copy.deepcopy(doc)
         return None
 
-    def find(
-        self, filter: dict[str, Any] | None = None
-    ) -> list[dict[str, Any]]:
+    def find(self, filter: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         """Return all documents matching *filter*."""
         return [copy.deepcopy(d) for d in self._iter_match(filter or {})]
 
-    def update_one(
-        self, filter: dict[str, Any], update: dict[str, Any]
-    ) -> int:
+    def update_one(self, filter: dict[str, Any], update: dict[str, Any]) -> int:
         """Update the first matching document. Returns count of modified."""
         for doc in self._iter_match(filter):
             old = copy.deepcopy(doc)
@@ -545,9 +524,7 @@ class Collection:
             return 1
         return 0
 
-    def update_many(
-        self, filter: dict[str, Any], update: dict[str, Any]
-    ) -> int:
+    def update_many(self, filter: dict[str, Any], update: dict[str, Any]) -> int:
         """Update all matching documents. Returns count of modified."""
         count = 0
         for doc in list(self._iter_match(filter)):
@@ -665,9 +642,7 @@ class Collection:
                     elif isinstance(current, list):
                         current.append(value)
                     else:
-                        raise ValueError(
-                            f"Cannot $push to non-array field: {field}"
-                        )
+                        raise ValueError(f"Cannot $push to non-array field: {field}")
             elif op == "$pull":
                 for field, value in fields.items():
                     current = _get_nested(doc, field)
@@ -681,6 +656,7 @@ class Collection:
 # ---------------------------------------------------------------------------
 # Transaction
 # ---------------------------------------------------------------------------
+
 
 class Transaction:
     """Snapshot-isolation transaction over a :class:`Database`.
@@ -797,9 +773,7 @@ class Transaction:
     def is_active(self) -> bool:
         return self._active
 
-    def _get_effective_docs(
-        self, coll_name: str
-    ) -> dict[str, dict[str, Any]]:
+    def _get_effective_docs(self, coll_name: str) -> dict[str, dict[str, Any]]:
         """Return the effective document set (snapshot + buffered writes)."""
         base = copy.deepcopy(self._snapshot.get(coll_name, {}))
         for doc_id, doc in self._writes.get(coll_name, {}).items():
@@ -829,9 +803,7 @@ class _TransactionCollection:
         self._txn._writes[self._name][doc_id] = doc
         return doc_id
 
-    def find_one(
-        self, filter: dict[str, Any] | None = None
-    ) -> dict[str, Any] | None:
+    def find_one(self, filter: dict[str, Any] | None = None) -> dict[str, Any] | None:
         docs = self._txn._get_effective_docs(self._name)
         for doc_id, doc in docs.items():
             self._txn._read_ids[self._name].add(doc_id)
@@ -839,9 +811,7 @@ class _TransactionCollection:
                 return copy.deepcopy(doc)
         return None
 
-    def find(
-        self, filter: dict[str, Any] | None = None
-    ) -> list[dict[str, Any]]:
+    def find(self, filter: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         docs = self._txn._get_effective_docs(self._name)
         results = []
         for doc_id, doc in docs.items():
@@ -850,9 +820,7 @@ class _TransactionCollection:
                 results.append(copy.deepcopy(doc))
         return results
 
-    def update_one(
-        self, filter: dict[str, Any], update: dict[str, Any]
-    ) -> int:
+    def update_one(self, filter: dict[str, Any], update: dict[str, Any]) -> int:
         docs = self._txn._get_effective_docs(self._name)
         for doc_id, doc in docs.items():
             self._txn._read_ids[self._name].add(doc_id)
@@ -878,6 +846,7 @@ class _TransactionCollection:
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
+
 
 class Database:
     """Top-level database containing named collections.
