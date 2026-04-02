@@ -155,8 +155,6 @@ db = Database()
 
 # Access or create a collection (creates on first access)
 users = db.collection("users")
-# or
-users = db["users"]
 
 # List collection names
 db.list_collections()  # -> ["users"]
@@ -305,19 +303,33 @@ results = users.aggregate([
 # Start a transaction (snapshot isolation)
 txn = db.begin_transaction()
 
+# Access collections through the transaction proxy
+users = txn.collection("users")
+
 # Reads see a consistent snapshot
-user = txn.find_one("users", {"name": "Alice"})
+user = users.find_one({"name": "Alice"})
 
 # Writes are buffered until commit
-txn.insert_one("users", {"name": "Dave", "age": 28})
-txn.update_one("users", {"name": "Alice"}, {"$set": {"age": 32}})
-txn.delete_one("users", {"name": "Bob"})
+users.insert_one({"name": "Dave", "age": 28})
+users.update_one({"name": "Alice"}, {"$set": {"age": 32}})
+users.delete_one({"name": "Bob"})
 
 # Commit applies all changes atomically
 txn.commit()
 
 # Or rollback to discard all buffered changes
 # txn.rollback()
+```
+
+**Convenience shorthand methods** are also available directly on the transaction:
+
+```python
+txn = db.begin_transaction()
+txn.insert("users", {"name": "Dave", "age": 28})
+txn.find("users", {"name": "Alice"})
+txn.update("users", {"name": "Alice"}, {"$set": {"age": 32}})
+txn.delete("users", {"name": "Bob"})
+txn.commit()
 ```
 
 **Transaction guarantees**:
@@ -395,7 +407,8 @@ products.aggregate([
 
 # Transactions
 txn = db.begin_transaction()
-txn.update_one("products", {"name": "Laptop"}, {"$set": {"price": 899}})
-txn.insert_one("products", {"name": "Monitor", "price": 399, "category": "electronics"})
+txn_products = txn.collection("products")
+txn_products.update_one({"name": "Laptop"}, {"$set": {"price": 899}})
+txn_products.insert_one({"name": "Monitor", "price": 399, "category": "electronics"})
 txn.commit()
 ```
