@@ -8,6 +8,7 @@ solutions to classic coding challenges, built with modern tooling.
 | Document | Description |
 |----------|-------------|
 | [challenges.md](challenges.md) | Detailed write-ups for each coding challenge |
+| [task_queue.md](task_queue.md) | Distributed task queue: architecture, API reference, and usage examples |
 | [../README.md](../README.md) | Project overview, quick start, and contributing guide |
 
 ## Tooling Reference
@@ -25,3 +26,9 @@ solutions to classic coding challenges, built with modern tooling.
 |-----------|--------|-------|------|
 | Merge Intervals | `src/challenges/merge_intervals.py` | `tests/test_merge_intervals.py`, `tests/test_merge_intervals_extended.py` | [challenges.md#merge-intervals](challenges.md#merge-intervals) |
 | In-Memory NoSQL Database | `src/challenges/nosql_db.py` | `tests/test_nosql_db.py` | [challenges.md#in-memory-nosql-database](challenges.md#in-memory-nosql-database) |
+
+## Systems Projects
+
+| Project | Module | Tests | Docs |
+|---------|--------|-------|------|
+| Distributed Task Queue | `task_queue/` | `tests/test_task_queue/` (200+ tests) | [task_queue.md](task_queue.md) |

@@ -1,11 +1,12 @@
 # Testing
 
-A Python project for solving coding challenges with modern tooling and CI.
+A Python project for coding challenges and systems programming, with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, including
-**Merge Intervals** and an **In-Memory NoSQL Database**. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges and systems
+programming projects, including **Merge Intervals**, an **In-Memory NoSQL
+Database**, and a **Distributed Task Queue**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -53,14 +54,35 @@ testing/
 │       ├── __init__.py
 │       ├── merge_intervals.py       # Merge Intervals solution
 │       └── nosql_db.py              # In-Memory NoSQL Database
+├── task_queue/                      # Distributed Task Queue system
+│   ├── __init__.py                  # Public API exports
+│   ├── models.py                    # Task, Priority, RetryPolicy
+│   ├── scheduler.py                 # DAG dependency manager
+│   ├── queue.py                     # Thread-safe priority queue
+│   ├── worker.py                    # Worker thread pool
+│   ├── retry.py                     # Retry manager + dead-letter queue
+│   ├── wal.py                       # Write-ahead log
+│   ├── snapshot.py                  # Periodic state snapshots
+│   └── broker.py                    # Central coordinator
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
 │   ├── test_merge_intervals_extended.py  # Extended edge-case tests
-│   └── test_nosql_db.py             # NoSQL database test suite
+│   ├── test_nosql_db.py             # NoSQL database test suite
+│   └── test_task_queue/             # Task queue test suite (200+ tests)
+│       ├── test_models.py
+│       ├── test_scheduler.py
+│       ├── test_queue.py
+│       ├── test_worker.py
+│       ├── test_retry.py
+│       ├── test_wal.py
+│       ├── test_snapshot.py
+│       ├── test_broker.py
+│       └── test_integration.py
 ├── docs/
 │   ├── index.md                     # Documentation hub
-│   └── challenges.md                # Challenge write-ups
+│   ├── challenges.md                # Challenge write-ups
+│   └── task_queue.md                # Task queue architecture & API docs
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                   # CI pipeline (lint + test)
@@ -74,8 +96,9 @@ testing/
 | Directory | Purpose |
 |-----------|---------|
 | `src/challenges/` | Challenge implementations (importable as `from challenges.<name> import ...`) |
-| `tests/` | Pytest test suites; mirrors `src/challenges/` naming |
-| `docs/` | Written documentation and challenge explanations |
+| `task_queue/` | Distributed task queue system (importable as `from task_queue import Broker`) |
+| `tests/` | Pytest test suites; mirrors source module naming |
+| `docs/` | Written documentation, challenge explanations, and system docs |
 | `.github/workflows/` | GitHub Actions CI configuration |
 
 ## Challenges
@@ -141,6 +164,48 @@ Transactions with snapshot isolation
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 API reference, complexity analysis, and usage examples.
+
+### Distributed Task Queue
+
+A production-quality distributed task queue with real Python threading, priority
+scheduling, DAG-based task dependencies, retry logic with dead-letter queues,
+and crash recovery via write-ahead logging and snapshots.
+
+```python
+from task_queue import Broker, Priority, RetryPolicy
+
+broker = Broker(num_workers=4, data_dir="./queue_data")
+broker.start()
+
+# Submit a task with high priority
+task = broker.submit(
+    name="process_order",
+    handler=lambda p: f"Processed order {p['id']}",
+    payload={"id": 123},
+    priority=Priority.HIGH,
+)
+
+# Wait for result
+result = broker.wait_for(task.id)
+
+# Build dependency chains (DAGs)
+t1 = broker.submit(name="extract", handler=extract, payload={})
+t2 = broker.submit(name="transform", handler=transform, payload={},
+                   dependencies=[t1.id])
+t3 = broker.submit(name="load", handler=load, payload={},
+                   dependencies=[t2.id])
+
+broker.shutdown(wait=True)
+```
+
+**Features**: Thread-safe priority queue &middot; DAG dependency scheduling
+with cycle detection &middot; Configurable retry with fixed/exponential backoff
+&middot; Dead-letter queue (inspect, replay, purge) &middot; Write-ahead log
+for durability &middot; Periodic snapshots for fast recovery &middot; Graceful
+and forceful shutdown
+
+See [docs/task_queue.md](docs/task_queue.md) for architecture overview, full
+API reference, and detailed usage examples.
 
 ## CI
 
