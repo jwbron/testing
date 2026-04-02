@@ -1,0 +1,223 @@
+{
+  "schemaVersion": "1.0",
+  "issue": {
+    "number": 10,
+    "title": "Issue #10",
+    "url": "https://github.com/jwbron/testing/issues/10"
+  },
+  "pipeline_id": null,
+  "current_phase": "refine",
+  "acceptance_criteria": [],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Implement",
+      "status": "pending",
+      "review_cycles": 0,
+      "max_cycles": 3,
+      "escalated": false,
+      "escalation_reason": null,
+      "tasks": [
+        {
+          "id": "task-1-1",
+          "description": "Update `pyproject.toml` \u2014 add `pydantic` to `[project.dependencies]`, add `mypy` to `[dependency-groups] dev`",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "uv sync succeeds with both new deps available",
+          "files_affected": [
+            "pyproject.toml"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-2",
+          "description": "Create `src/challenges/microgpt.py` with Pydantic config models \u2014 `GPTConfig(n_layer, n_embd, block_size, n_head, vocab_size)` with computed `head_dim` property, `AdamConfig(learning_rate, beta1, beta2, eps)`, `SampleConfig(temperature, max_tokens, num_samples)`. Defaults should match original script values.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Models can be instantiated and validated with Pydantic",
+          "files_affected": [
+            "src/challenges/microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-3",
+          "description": "In `src/challenges/microgpt.py`, implement the `Scalar` class (renamed from `Value`) \u2014 a scalar autograd node supporting `+, *, **, /, -, neg, log, exp, relu` with forward computation and reverse-mode gradient accumulation via `backward()`. Uses topological sort. Must handle `Scalar op float` and `float op Scalar`.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All operator combinations produce correct .data and .grad values",
+          "files_affected": [
+            "src/challenges/microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-4",
+          "description": "In `src/challenges/microgpt.py`, implement NN primitive functions \u2014 `linear(x, w)` (matrix-vector multiply), `softmax(logits)` (numerically stable via max subtraction), `rmsnorm(x)` (root-mean-square normalization). All with full type annotations.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Each function is independently callable with correct output shapes and values",
+          "files_affected": [
+            "src/challenges/microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-5",
+          "description": "In `src/challenges/microgpt.py`, implement tokenizer functions \u2014 `build_vocab(docs)` (extract unique sorted chars + BOS), `encode(text, vocab, bos)` (tokenize with BOS wrapping), `decode(token_ids, vocab, bos)` (inverse of encode), `load_dataset(path, url)` (download if needed, read lines). No import-time side effects.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "decode(encode(text)) == text for valid inputs; encode raises ValueError on unknown chars",
+          "files_affected": [
+            "src/challenges/microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-6",
+          "description": "In `src/challenges/microgpt.py`, implement model init and forward pass \u2014 `init_state_dict(config)` (creates all weight matrices: wte, wpe, lm_head, per-layer attn_wq/wk/wv/wo and mlp_fc1/fc2), `gpt(token_id, pos_id, keys, values, config, state_dict)` (single-token transformer forward pass). Both take GPTConfig instead of relying on globals.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "Forward pass returns vocab_size logits; deterministic for same inputs",
+          "files_affected": [
+            "src/challenges/microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-7",
+          "description": "In `src/challenges/microgpt.py`, implement training and inference \u2014 `adam_step(params, m, v, step, config)` (one Adam update), `train(docs, config, adam_config, num_steps)` (full training loop returning state_dict, vocab, bos), `sample(state_dict, vocab, bos, config, sample_config)` (temperature-controlled text generation).",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "train for 50 steps shows decreasing loss; sample produces valid token sequences",
+          "files_affected": [
+            "src/challenges/microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-8",
+          "description": "Add type annotations throughout `src/challenges/microgpt.py` and configure mypy \u2014 add `[tool.mypy]` section to `pyproject.toml` with strict mode. Ensure all public functions and class methods have full type annotations.",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "mypy src/challenges/microgpt.py passes with no errors",
+          "files_affected": [
+            "src/challenges/microgpt.py",
+            "pyproject.toml"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-9",
+          "description": "Create `tests/test_microgpt.py` with 9 granular Scalar autograd tests \u2014 test_scalar_add (data=5, grads 1.0), test_scalar_mul (data=12, grads 4.0/3.0), test_scalar_pow (data=8, grad 12.0), test_scalar_relu_positive (passthrough, grad 1.0), test_scalar_relu_negative (data=0, grad 0.0), test_scalar_log (log(1)=0, grad 1.0), test_scalar_exp (exp(0)=1, grad 1.0), test_scalar_composite_backward (multi-op chain), test_scalar_division (data=2, correct grads).",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All 9 Scalar tests pass",
+          "files_affected": [
+            "tests/test_microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-10",
+          "description": "In `tests/test_microgpt.py`, add 5 NN primitive tests \u2014 test_linear_identity, test_softmax_uniform, test_softmax_sums_to_one, test_softmax_numerical_stability (large logits don't NaN), test_rmsnorm_unit_scale (output has ~unit RMS).",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All 5 NN primitive tests pass",
+          "files_affected": [
+            "tests/test_microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-11",
+          "description": "In `tests/test_microgpt.py`, add 3 tokenizer tests \u2014 test_build_vocab (known input \u2192 expected vocab and BOS), test_encode_decode_roundtrip, test_encode_unknown_char_raises (ValueError).",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All 3 tokenizer tests pass",
+          "files_affected": [
+            "tests/test_microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        },
+        {
+          "id": "task-1-12",
+          "description": "In `tests/test_microgpt.py`, add 5 GPT model and end-to-end tests \u2014 test_gpt_output_shape (vocab_size logits), test_gpt_deterministic (same input = same output), test_training_loss_decreases (50 steps tiny data), test_sample_produces_valid_tokens, test_sample_respects_bos_termination. All use tiny config (n_embd=4, n_head=2, block_size=4, n_layer=1).",
+          "status": "pending",
+          "commit": null,
+          "checkpoint_id": null,
+          "notes": "",
+          "acceptance_criteria": "All 5 GPT/e2e tests pass",
+          "files_affected": [
+            "tests/test_microgpt.py"
+          ],
+          "review_cycles": 0,
+          "max_cycles": 3,
+          "escalated": false
+        }
+      ],
+      "dependencies": [],
+      "review_feedback": []
+    }
+  ],
+  "decisions": [],
+  "workflow_owner": null,
+  "audit_log": [],
+  "refine_review_cycles": 0,
+  "refine_review_feedback": "",
+  "plan_review_cycles": 0,
+  "plan_review_feedback": "",
+  "pr": {
+    "title": "Refactor microgpt into modular library with tests",
+    "description": "Refactors Karpathy's monolithic microgpt script into a modular Python library\nunder src/challenges/microgpt.py with Pydantic config models, full type annotations\n(mypy-checked), and a comprehensive test suite covering autograd, NN primitives,\ntokenizer, and end-to-end training/inference.",
+    "test_plan": "- Automated: pytest tests/test_microgpt.py (22 tests covering Scalar autograd, NN primitives, tokenizer, GPT model, and end-to-end)\n- Automated: mypy src/challenges/microgpt.py (strict type checking)\n- Automated: ruff check src/challenges/microgpt.py tests/test_microgpt.py (linting)\n- Manual: Review that Scalar class correctly implements all autograd operations from the original Value class\n- Manual: Verify Pydantic config defaults match original script constants",
+    "manual_steps": "Pre-merge: Run uv sync to install pydantic and mypy dependencies\nPost-merge: None"
+  },
+  "feedback": null,
+  "phase_configs": null,
+  "agent_executions": []
+}
