@@ -4,8 +4,8 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
+This repository contains solutions to classic coding challenges, including
+**Merge Intervals** and an **In-Memory NoSQL Database**. The project uses modern Python tooling for a
 consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -51,11 +51,13 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── nosql_db.py              # In-Memory NoSQL Database
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   └── test_nosql_db.py             # NoSQL database test suite
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -101,8 +103,44 @@ interval overlaps the previous one, otherwise append.
 | Time | O(n log n) | Dominated by sort |
 | Space | O(n) | Output list (worst case: no overlaps) |
 
+### In-Memory NoSQL Database
+
+A document-oriented in-memory NoSQL database with a MongoDB-style API.
+Supports CRUD operations, rich queries with `$`-prefixed operators, secondary
+indexes, a multi-stage aggregation pipeline, and transactions with snapshot
+isolation.
+
+```python
+from challenges.nosql_db import Database
+
+db = Database()
+users = db.get_collection("users")
+
+# Insert documents
+users.insert_one({"name": "Alice", "age": 30})
+users.insert_many([{"name": "Bob", "age": 25}, {"name": "Carol", "age": 35}])
+
+# Query with operators
+users.find({"age": {"$gte": 25, "$lt": 35}})
+
+# Aggregation pipeline
+users.aggregate([
+    {"$group": {"_id": None, "avg_age": {"$avg": "$age"}}},
+])
+
+# Transactions with snapshot isolation
+txn = db.begin_transaction()
+txn.update_one("users", {"name": "Alice"}, {"$set": {"age": 31}})
+txn.commit()
+```
+
+**Features**: CRUD &middot; Query operators ($eq, $gt, $lt, $in, $and, $or,
+etc.) &middot; Dot-notation for nested fields &middot; Secondary indexes &middot;
+Aggregation ($match, $group, $sort, $project, $unwind, etc.) &middot;
+Transactions with snapshot isolation
+
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
-edge cases and test coverage details.
+API reference, complexity analysis, and usage examples.
 
 ## CI
 
