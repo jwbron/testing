@@ -24,3 +24,4 @@ solutions to classic coding challenges, built with modern tooling.
 | Challenge | Module | Tests | Docs |
 |-----------|--------|-------|------|
 | Merge Intervals | `src/challenges/merge_intervals.py` | `tests/test_merge_intervals.py`, `tests/test_merge_intervals_extended.py` | [challenges.md#merge-intervals](challenges.md#merge-intervals) |
+| In-Memory NoSQL Database | `src/challenges/nosql_db.py` | `tests/test_nosql_db.py` | [challenges.md#in-memory-nosql-database](challenges.md#in-memory-nosql-database) |
