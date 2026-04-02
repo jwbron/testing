@@ -4,9 +4,9 @@ A Python project for solving coding challenges with modern tooling and CI.
 
 ## Overview
 
-This repository contains solutions to classic coding challenges, starting with
-the **Merge Intervals** problem. The project uses modern Python tooling for a
-consistent development experience:
+This repository contains solutions to coding challenges, including
+**Merge Intervals** and an **In-Memory NoSQL Database**. The project uses modern
+Python tooling for a consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
 - **[ruff](https://docs.astral.sh/ruff/)** &mdash; linting and formatting
@@ -51,11 +51,13 @@ testing/
 ├── src/
 │   └── challenges/
 │       ├── __init__.py
-│       └── merge_intervals.py       # Merge Intervals solution
+│       ├── merge_intervals.py       # Merge Intervals solution
+│       └── nosql_db.py              # In-Memory NoSQL Database
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
-│   └── test_merge_intervals_extended.py  # Extended edge-case tests
+│   ├── test_merge_intervals_extended.py  # Extended edge-case tests
+│   └── test_nosql_db.py             # NoSQL database test suite
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -103,6 +105,47 @@ interval overlaps the previous one, otherwise append.
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 edge cases and test coverage details.
+
+### In-Memory NoSQL Database
+
+A document-oriented in-memory NoSQL database with a MongoDB-style API. Supports
+CRUD operations, rich query operators, secondary indexes, aggregation pipelines,
+and transactions with snapshot isolation.
+
+```python
+from challenges.nosql_db import Database
+
+db = Database()
+users = db.collection("users")
+
+users.insert_many([
+    {"name": "Alice", "age": 30, "dept": "eng"},
+    {"name": "Bob", "age": 25, "dept": "eng"},
+    {"name": "Charlie", "age": 35, "dept": "sales"},
+])
+
+# Query with operators
+young_engineers = users.find({"$and": [
+    {"dept": "eng"},
+    {"age": {"$lt": 30}},
+]})
+# => [{"_id": "...", "name": "Bob", "age": 25, "dept": "eng"}]
+
+# Aggregation pipeline
+users.aggregate([
+    {"$group": {"_id": "$dept", "avg_age": {"$avg": "$age"}}},
+    {"$sort": {"avg_age": -1}},
+])
+# => [{"_id": "sales", "avg_age": 35}, {"_id": "eng", "avg_age": 27.5}]
+```
+
+**Features**: Query engine (comparison, logical, set, existence operators),
+dot-notation for nested fields, secondary indexes, aggregation ($match, $group,
+$sort, $limit, $skip, $project, $unwind, $count), and transactions with snapshot
+isolation and conflict detection.
+
+See [docs/challenges.md](docs/challenges.md) for the full API reference and
+usage examples.
 
 ## CI
 
