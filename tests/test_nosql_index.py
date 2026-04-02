@@ -1,6 +1,7 @@
 """Tests for the IndexManager in the NoSQL database."""
 
 import pytest
+
 from challenges.nosql_db import Database
 
 
@@ -80,8 +81,7 @@ class TestIndexCreation:
     def test_index_on_id_field(self, db: Database) -> None:
         """Creating an index on _id should work."""
         col = db.collection("items")
-        doc = col.insert_one({"value": 42})
-        doc_id = doc["_id"]
+        doc_id = col.insert_one({"value": 42})
         col.create_index("_id")
         results = col.find({"_id": doc_id})
         assert len(results) == 1
