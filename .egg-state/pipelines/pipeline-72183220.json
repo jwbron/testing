@@ -5,7 +5,7 @@
   "branch": "egg/pipeline-72183220/work",
   "base_branch": null,
   "prompt": "Add a new coding challenge: LRU Cache implementation in src/challenges/lru_cache.py with tests in tests/test_lru_cache.py",
-  "status": "running",
+  "status": "complete",
   "current_phase": "pr",
   "config": {
     "auto_create_pr": true,
@@ -170,11 +170,29 @@
       "error": null,
       "hitl_feedback": null,
       "phase_start_sha": "a17c58971d87e8683650ec986a43a2d505f45fb7"
+    },
+    "pr": {
+      "phase": "pr",
+      "status": "complete",
+      "started_at": "2026-04-02T19:20:14.605709Z",
+      "work_started_at": "2026-04-02T19:20:14.606660Z",
+      "completed_at": "2026-04-02T19:20:59.954022Z",
+      "containers": [],
+      "agents": [],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [],
+      "artifacts": {
+        "pr_url": "https://github.com/jwbron/testing/pull/9"
+      },
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": "f33d70f3e3d8d13d3023c13ba3479ddf2d7778b1"
     }
   },
   "decisions": [],
   "created_at": "2026-04-02T19:13:37.520336Z",
-  "updated_at": "2026-04-02T19:20:14.594022Z",
+  "updated_at": "2026-04-02T19:21:22.029354Z",
   "contract_synced": true,
   "network_mode": null,
   "mode": "issue",
@@ -182,5 +200,5 @@
   "error": null,
   "analysis": "### Task Analysis\n\n**Problem statement**: Add a new coding challenge to the repo — an LRU Cache implementation with `get`, `put`, capacity eviction, and O(1) operations using a doubly-linked list + hash map.\n\n**System context**: Challenges live in `src/challenges/` with corresponding tests in `tests/`. The existing challenges range from a simple algorithm (`merge_intervals.py`) to a complex data structure (`nosql_db.py`). An LRU Cache sits nicely in the middle.\n\n**Files affected**:\n- `src/challenges/lru_cache.py` — new module with the LRU cache implementation\n- `tests/test_lru_cache.py` — comprehensive tests\n\n**Risks / edge cases**: None — this is a new standalone module with no impact on existing code.",
   "plan": "# Plan: LRU Cache Coding Challenge\n\n## Summary\n\nImplement an LRU (Least Recently Used) Cache as a new coding challenge. The cache supports O(1) `get` and `put` operations using a doubly-linked list for recency tracking and a hash map for key lookup. When capacity is exceeded, the least recently used entry is evicted. This is a classic data structure challenge that complements the existing merge_intervals (algorithm) and nosql_db (complex system) challenges.\n\n**Risks / edge cases**: None — standalone new module with no impact on existing code.\n\n## Implementation\n\n### Phase 1: Implement\n\nAdd the LRU Cache module and comprehensive tests.\n\n**Tasks**:\n1. **[task-1-1]** Create `src/challenges/lru_cache.py` with an `LRUCache` class that uses a doubly-linked list + dict for O(1) `get`/`put` with capacity-based eviction. The class should have `__init__(capacity)`, `get(key) -> int`, and `put(key, value) -> None` methods. Acceptance: get returns value and marks as recently used, or -1 if not found; put inserts/updates and evicts LRU when at capacity.\n2. **[task-1-2]** Create `tests/test_lru_cache.py` with tests covering: basic get/put, capacity eviction order, access-order updates after get, edge cases (capacity 1, missing keys, overwrite existing key value). Acceptance: all tests pass and cover the core behaviors.\n\n```yaml\n# yaml-tasks\npr:\n  title: \"Add LRU Cache coding challenge\"\n  description: |\n    Adds a new coding challenge implementing an LRU Cache with O(1) get/put\n    operations using a doubly-linked list and hash map, with comprehensive tests.\n  test_plan: |\n    - Automated: pytest tests/test_lru_cache.py covers get, put, eviction, access order, edge cases\n    - Manual: Review that implementation uses O(1) data structures (linked list + dict)\n  manual_steps: |\n    Pre-merge: None\n    Post-merge: None\nphases:\n  - id: 1\n    name: Implement\n    goal: \"Add LRU Cache implementation and tests\"\n    tasks:\n      - id: task-1-1\n        description: \"Create `src/challenges/lru_cache.py` with an `LRUCache` class using a doubly-linked list + dict. Methods: `__init__(capacity: int)`, `get(key: int) -> int` (returns value or -1), `put(key: int, value: int) -> None` (evicts LRU entry when at capacity). Use sentinel head/tail nodes for the doubly-linked list to simplify edge cases.\"\n        acceptance: \"get() returns correct value and updates recency; put() inserts, updates, and evicts LRU when at capacity; all operations are O(1)\"\n        files:\n          - src/challenges/lru_cache.py\n      - id: task-1-2\n        description: \"Create `tests/test_lru_cache.py` with tests for: basic get/put, capacity eviction (verify LRU item is evicted), access-order update after get, capacity-1 cache, get on missing key returns -1, overwrite existing key updates value without eviction\"\n        acceptance: \"All tests pass and cover the documented behaviors\"\n        files:\n          - tests/test_lru_cache.py\n```",
-  "version": 11
+  "version": 16
 }
