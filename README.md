@@ -5,8 +5,9 @@ A Python project for solving coding challenges with modern tooling and CI.
 ## Overview
 
 This repository contains solutions to classic coding challenges, including
-**Merge Intervals**, an **In-Memory NoSQL Database**, and an **LRU Cache**. The project uses modern Python tooling for a
-consistent development experience:
+**Merge Intervals**, an **In-Memory NoSQL Database**, an **LRU Cache**, and
+**MicroGPT** (a pure-Python GPT implementation). The project uses modern
+Python tooling for a consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
 - **[ruff](https://docs.astral.sh/ruff/)** &mdash; linting and formatting
@@ -53,13 +54,15 @@ testing/
 │       ├── __init__.py
 │       ├── merge_intervals.py       # Merge Intervals solution
 │       ├── nosql_db.py              # In-Memory NoSQL Database
-│       └── lru_cache.py             # LRU Cache implementation
+│       ├── lru_cache.py             # LRU Cache implementation
+│       └── microgpt.py              # MicroGPT (pure-Python GPT)
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
 │   ├── test_merge_intervals_extended.py  # Extended edge-case tests
 │   ├── test_nosql_db.py             # NoSQL database test suite
-│   └── test_lru_cache.py            # LRU Cache test suite
+│   ├── test_lru_cache.py            # LRU Cache test suite
+│   └── test_microgpt.py             # MicroGPT test suite
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -168,6 +171,34 @@ cache.get(2)       # => -1 (evicted)
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 architecture overview, API reference, and edge cases.
+
+### MicroGPT
+
+A refactored version of Andrej Karpathy's
+[microgpt](https://karpathy.github.io/2026/02/12/microgpt/) — a complete GPT
+implementation in pure Python with no external dependencies (beyond Pydantic
+for configuration). Includes a scalar autograd engine, character-level
+tokenizer, single-layer transformer, Adam optimizer, and temperature-controlled
+text generation.
+
+```python
+from challenges.microgpt import (
+    GPTConfig, AdamConfig, SampleConfig,
+    load_dataset, train, sample,
+)
+
+docs = load_dataset("input.txt")
+config = GPTConfig(n_layer=1, n_embd=16, n_head=4, vocab_size=27)
+state_dict, vocab, bos = train(docs, config, AdamConfig(), num_steps=500)
+names = sample(state_dict, vocab, bos, config, SampleConfig(temperature=0.5))
+```
+
+**Components**: Scalar autograd &middot; NN primitives (linear, softmax,
+rmsnorm) &middot; Character tokenizer &middot; Transformer forward pass &middot;
+Adam optimizer &middot; Text generation
+
+See [docs/challenges.md](docs/challenges.md) for the full write-up including
+architecture overview, API reference, autograd details, and test coverage.
 
 ## CI
 
