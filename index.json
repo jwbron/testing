@@ -8,7 +8,8 @@
       "ckpt-b62c711cb6d01230",
       "ckpt-441777bf4a8b7f64",
       "ckpt-43d8b15089dc663a",
-      "ckpt-be56d733aff68652"
+      "ckpt-be56d733aff68652",
+      "ckpt-d8a6b5c55757811b"
     ]
   },
   "by_commit": {},
@@ -27,7 +28,8 @@
       "ckpt-f5b63d9783351713",
       "ckpt-d13203168332ab29",
       "ckpt-43d8b15089dc663a",
-      "ckpt-be56d733aff68652"
+      "ckpt-be56d733aff68652",
+      "ckpt-d8a6b5c55757811b"
     ]
   },
   "by_pr": {},
@@ -50,7 +52,8 @@
       "ckpt-43d8b15089dc663a"
     ],
     "issue-1565-v2-failsafe-push": [
-      "ckpt-be56d733aff68652"
+      "ckpt-be56d733aff68652",
+      "ckpt-d8a6b5c55757811b"
     ],
     "issue-1565-v2-state-ls-remote": [
       "ckpt-f5b63d9783351713"
@@ -65,7 +68,8 @@
       "ckpt-b62c711cb6d01230",
       "ckpt-441777bf4a8b7f64",
       "ckpt-43d8b15089dc663a",
-      "ckpt-be56d733aff68652"
+      "ckpt-be56d733aff68652",
+      "ckpt-d8a6b5c55757811b"
     ]
   },
   "by_trigger": {
@@ -77,7 +81,8 @@
       "ckpt-b62c711cb6d01230",
       "ckpt-441777bf4a8b7f64",
       "ckpt-43d8b15089dc663a",
-      "ckpt-be56d733aff68652"
+      "ckpt-be56d733aff68652",
+      "ckpt-d8a6b5c55757811b"
     ]
   },
   "checkpoints": [
@@ -232,8 +237,27 @@
       "tool_call_count": 0,
       "total_tokens": 0,
       "trigger_type": "session_end"
+    },
+    {
+      "agent_type": "unknown",
+      "branch": "egg/issue-1565-v2",
+      "commit_sha": null,
+      "created_at": "2026-04-08T16:58:30.200783Z",
+      "files_touched_count": 0,
+      "id": "ckpt-d8a6b5c55757811b",
+      "issue_number": null,
+      "message_count": 0,
+      "pipeline_id": "issue-1565-v2",
+      "pipeline_phase": null,
+      "pr_number": null,
+      "repo": null,
+      "session_id": "issue-1565-v2-failsafe-push",
+      "session_status": "completed",
+      "tool_call_count": 0,
+      "total_tokens": 0,
+      "trigger_type": "session_end"
     }
   ],
-  "last_updated": "2026-04-08T16:58:03.490185Z",
+  "last_updated": "2026-04-08T16:58:30.940049Z",
   "schemaVersion": "2.0"
 }
