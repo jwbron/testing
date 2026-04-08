@@ -1,0 +1,55 @@
+{
+  "by_agent_type": {
+    "unknown": [
+      "ckpt-f5b63d9783351713"
+    ]
+  },
+  "by_commit": {},
+  "by_issue": {},
+  "by_phase": {},
+  "by_pipeline": {
+    "issue-1565-v2": [
+      "ckpt-f5b63d9783351713"
+    ]
+  },
+  "by_pr": {},
+  "by_repo": {},
+  "by_session": {
+    "issue-1565-v2-state-ls-remote": [
+      "ckpt-f5b63d9783351713"
+    ]
+  },
+  "by_status": {
+    "completed": [
+      "ckpt-f5b63d9783351713"
+    ]
+  },
+  "by_trigger": {
+    "session_end": [
+      "ckpt-f5b63d9783351713"
+    ]
+  },
+  "checkpoints": [
+    {
+      "agent_type": "unknown",
+      "branch": null,
+      "commit_sha": null,
+      "created_at": "2026-04-08T16:39:30.257334Z",
+      "files_touched_count": 0,
+      "id": "ckpt-f5b63d9783351713",
+      "issue_number": null,
+      "message_count": 0,
+      "pipeline_id": "issue-1565-v2",
+      "pipeline_phase": null,
+      "pr_number": null,
+      "repo": null,
+      "session_id": "issue-1565-v2-state-ls-remote",
+      "session_status": "completed",
+      "tool_call_count": 0,
+      "total_tokens": 0,
+      "trigger_type": "session_end"
+    }
+  ],
+  "last_updated": "2026-04-08T16:39:30.679442Z",
+  "schemaVersion": "2.0"
+}
