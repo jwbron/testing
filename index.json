@@ -12,7 +12,8 @@
       "ckpt-d8a6b5c55757811b",
       "ckpt-53a45a68f9cd360d",
       "ckpt-3104b621bcc042e8",
-      "ckpt-1383ed346e4b7569"
+      "ckpt-1383ed346e4b7569",
+      "ckpt-1fb7aaad1a4d93e1"
     ]
   },
   "by_commit": {},
@@ -21,7 +22,8 @@
   "by_pipeline": {
     "issue-1552": [
       "ckpt-b62c711cb6d01230",
-      "ckpt-441777bf4a8b7f64"
+      "ckpt-441777bf4a8b7f64",
+      "ckpt-1fb7aaad1a4d93e1"
     ],
     "issue-1564": [
       "ckpt-b9ac6a6af0a1aaa1",
@@ -43,6 +45,9 @@
   "by_session": {
     "issue-1552-failsafe-fetch": [
       "ckpt-441777bf4a8b7f64"
+    ],
+    "issue-1552-failsafe-push": [
+      "ckpt-1fb7aaad1a4d93e1"
     ],
     "issue-1552-state-ls-remote": [
       "ckpt-b62c711cb6d01230"
@@ -83,7 +88,8 @@
       "ckpt-d8a6b5c55757811b",
       "ckpt-53a45a68f9cd360d",
       "ckpt-3104b621bcc042e8",
-      "ckpt-1383ed346e4b7569"
+      "ckpt-1383ed346e4b7569",
+      "ckpt-1fb7aaad1a4d93e1"
     ]
   },
   "by_trigger": {
@@ -99,7 +105,8 @@
       "ckpt-d8a6b5c55757811b",
       "ckpt-53a45a68f9cd360d",
       "ckpt-3104b621bcc042e8",
-      "ckpt-1383ed346e4b7569"
+      "ckpt-1383ed346e4b7569",
+      "ckpt-1fb7aaad1a4d93e1"
     ]
   },
   "checkpoints": [
@@ -330,8 +337,27 @@
       "tool_call_count": 0,
       "total_tokens": 0,
       "trigger_type": "session_end"
+    },
+    {
+      "agent_type": "unknown",
+      "branch": "egg/issue-1552",
+      "commit_sha": null,
+      "created_at": "2026-04-08T17:06:42.735789Z",
+      "files_touched_count": 0,
+      "id": "ckpt-1fb7aaad1a4d93e1",
+      "issue_number": null,
+      "message_count": 0,
+      "pipeline_id": "issue-1552",
+      "pipeline_phase": null,
+      "pr_number": null,
+      "repo": null,
+      "session_id": "issue-1552-failsafe-push",
+      "session_status": "completed",
+      "tool_call_count": 0,
+      "total_tokens": 0,
+      "trigger_type": "session_end"
     }
   ],
-  "last_updated": "2026-04-08T17:06:25.898717Z",
+  "last_updated": "2026-04-08T17:06:43.478097Z",
   "schemaVersion": "2.0"
 }
