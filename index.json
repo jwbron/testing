@@ -13,7 +13,8 @@
       "ckpt-53a45a68f9cd360d",
       "ckpt-3104b621bcc042e8",
       "ckpt-1383ed346e4b7569",
-      "ckpt-1fb7aaad1a4d93e1"
+      "ckpt-1fb7aaad1a4d93e1",
+      "ckpt-35917bb64dbe5086"
     ]
   },
   "by_commit": {},
@@ -28,7 +29,8 @@
     "issue-1564": [
       "ckpt-b9ac6a6af0a1aaa1",
       "ckpt-45ffd758863ca384",
-      "ckpt-1383ed346e4b7569"
+      "ckpt-1383ed346e4b7569",
+      "ckpt-35917bb64dbe5086"
     ],
     "issue-1565-v2": [
       "ckpt-f5b63d9783351713",
@@ -51,6 +53,9 @@
     ],
     "issue-1552-state-ls-remote": [
       "ckpt-b62c711cb6d01230"
+    ],
+    "issue-1564-branch-cleanup-egg-2829adefeb9e337f5b742e163060f03d51c634c7ac2c40c821fdb6f47d16b189-work": [
+      "ckpt-35917bb64dbe5086"
     ],
     "issue-1564-failsafe-fetch": [
       "ckpt-45ffd758863ca384"
@@ -89,7 +94,8 @@
       "ckpt-53a45a68f9cd360d",
       "ckpt-3104b621bcc042e8",
       "ckpt-1383ed346e4b7569",
-      "ckpt-1fb7aaad1a4d93e1"
+      "ckpt-1fb7aaad1a4d93e1",
+      "ckpt-35917bb64dbe5086"
     ]
   },
   "by_trigger": {
@@ -106,7 +112,8 @@
       "ckpt-53a45a68f9cd360d",
       "ckpt-3104b621bcc042e8",
       "ckpt-1383ed346e4b7569",
-      "ckpt-1fb7aaad1a4d93e1"
+      "ckpt-1fb7aaad1a4d93e1",
+      "ckpt-35917bb64dbe5086"
     ]
   },
   "checkpoints": [
@@ -356,8 +363,27 @@
       "tool_call_count": 0,
       "total_tokens": 0,
       "trigger_type": "session_end"
+    },
+    {
+      "agent_type": "unknown",
+      "branch": "egg/2829adefeb9e337f5b742e163060f03d51c634c7ac2c40c821fdb6f47d16b189/work",
+      "commit_sha": null,
+      "created_at": "2026-04-08T17:43:57.638170Z",
+      "files_touched_count": 0,
+      "id": "ckpt-35917bb64dbe5086",
+      "issue_number": null,
+      "message_count": 0,
+      "pipeline_id": "issue-1564",
+      "pipeline_phase": null,
+      "pr_number": null,
+      "repo": null,
+      "session_id": "issue-1564-branch-cleanup-egg-2829adefeb9e337f5b742e163060f03d51c634c7ac2c40c821fdb6f47d16b189-work",
+      "session_status": "completed",
+      "tool_call_count": 0,
+      "total_tokens": 0,
+      "trigger_type": "session_end"
     }
   ],
-  "last_updated": "2026-04-08T17:06:43.478097Z",
+  "last_updated": "2026-04-08T17:43:58.415189Z",
   "schemaVersion": "2.0"
 }
