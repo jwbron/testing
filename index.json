@@ -41,7 +41,8 @@
       "ckpt-a2dcb3bfd6cd63f4",
       "ckpt-94b99246b2c5e0c4",
       "ckpt-f6e4506f86d208b0",
-      "ckpt-d804f7ee874d356e"
+      "ckpt-d804f7ee874d356e",
+      "ckpt-83f784eac880804b"
     ]
   },
   "by_commit": {},
@@ -52,7 +53,8 @@
       "ckpt-a2dcb3bfd6cd63f4",
       "ckpt-94b99246b2c5e0c4",
       "ckpt-f6e4506f86d208b0",
-      "ckpt-d804f7ee874d356e"
+      "ckpt-d804f7ee874d356e",
+      "ckpt-83f784eac880804b"
     ],
     "issue-1552": [
       "ckpt-b62c711cb6d01230",
@@ -107,6 +109,9 @@
   "by_session": {
     "KORE-1191-full-branch-cleanup-egg-d96aac643d4fcb37c7ab4447e6ade06db662690b375c120eba2453aa4ae6f891-work": [
       "ckpt-d804f7ee874d356e"
+    ],
+    "KORE-1191-full-branch-cleanup-egg-ef90336bb059e850364928cf775eb678e1c218cab5c27b1b6cd85ae151f689c2-work": [
+      "ckpt-83f784eac880804b"
     ],
     "KORE-1191-full-failsafe-fetch": [
       "ckpt-94b99246b2c5e0c4"
@@ -253,7 +258,8 @@
       "ckpt-a2dcb3bfd6cd63f4",
       "ckpt-94b99246b2c5e0c4",
       "ckpt-f6e4506f86d208b0",
-      "ckpt-d804f7ee874d356e"
+      "ckpt-d804f7ee874d356e",
+      "ckpt-83f784eac880804b"
     ]
   },
   "by_trigger": {
@@ -298,7 +304,8 @@
       "ckpt-a2dcb3bfd6cd63f4",
       "ckpt-94b99246b2c5e0c4",
       "ckpt-f6e4506f86d208b0",
-      "ckpt-d804f7ee874d356e"
+      "ckpt-d804f7ee874d356e",
+      "ckpt-83f784eac880804b"
     ]
   },
   "checkpoints": [
@@ -1080,8 +1087,27 @@
       "tool_call_count": 0,
       "total_tokens": 0,
       "trigger_type": "session_end"
+    },
+    {
+      "agent_type": "unknown",
+      "branch": "egg/ef90336bb059e850364928cf775eb678e1c218cab5c27b1b6cd85ae151f689c2/work",
+      "commit_sha": null,
+      "created_at": "2026-04-09T18:12:02.798202Z",
+      "files_touched_count": 0,
+      "id": "ckpt-83f784eac880804b",
+      "issue_number": null,
+      "message_count": 0,
+      "pipeline_id": "KORE-1191-full",
+      "pipeline_phase": null,
+      "pr_number": null,
+      "repo": null,
+      "session_id": "KORE-1191-full-branch-cleanup-egg-ef90336bb059e850364928cf775eb678e1c218cab5c27b1b6cd85ae151f689c2-work",
+      "session_status": "completed",
+      "tool_call_count": 0,
+      "total_tokens": 0,
+      "trigger_type": "session_end"
     }
   ],
-  "last_updated": "2026-04-09T18:12:01.710246Z",
+  "last_updated": "2026-04-09T18:12:03.681974Z",
   "schemaVersion": "2.0"
 }
