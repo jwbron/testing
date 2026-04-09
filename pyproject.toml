@@ -3,6 +3,9 @@ name = "testing"
 version = "0.1.0"
 description = "Coding challenges with proper Python tooling"
 requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+]
 
 [tool.ruff]
 line-length = 88
@@ -24,6 +27,12 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "mypy>=1.10",
     "pytest>=9.0.2",
     "ruff>=0.15.8",
 ]
+
+[tool.mypy]
+strict = true
+packages = ["challenges"]
+mypy_path = "src"

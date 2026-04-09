@@ -26,3 +26,4 @@ solutions to classic coding challenges, built with modern tooling.
 | Merge Intervals | `src/challenges/merge_intervals.py` | `tests/test_merge_intervals.py`, `tests/test_merge_intervals_extended.py` | [challenges.md#merge-intervals](challenges.md#merge-intervals) |
 | In-Memory NoSQL Database | `src/challenges/nosql_db.py` | `tests/test_nosql_db.py` | [challenges.md#in-memory-nosql-database](challenges.md#in-memory-nosql-database) |
 | LRU Cache | `src/challenges/lru_cache.py` | `tests/test_lru_cache.py` | [challenges.md#lru-cache](challenges.md#lru-cache) |
+| MicroGPT | `src/challenges/microgpt.py` | `tests/test_microgpt.py` | [challenges.md#microgpt](challenges.md#microgpt) |
