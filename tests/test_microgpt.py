@@ -300,10 +300,7 @@ class TestLinear:
         """Identity matrix should return the input vector."""
         n = 3
         x = [Scalar(float(i + 1)) for i in range(n)]
-        w = [
-            [Scalar(1.0 if i == j else 0.0) for j in range(n)]
-            for i in range(n)
-        ]
+        w = [[Scalar(1.0 if i == j else 0.0) for j in range(n)] for i in range(n)]
         result = linear(x, w)
         assert len(result) == n
         for i in range(n):
@@ -551,9 +548,7 @@ class TestGPT:
     """Tests for the GPT forward pass."""
 
     def _tiny_config(self) -> GPTConfig:
-        return GPTConfig(
-            n_embd=4, n_head=2, block_size=4, n_layer=1, vocab_size=5
-        )
+        return GPTConfig(n_embd=4, n_head=2, block_size=4, n_layer=1, vocab_size=5)
 
     def test_gpt_output_shape(self) -> None:
         config = self._tiny_config()
@@ -672,12 +667,8 @@ class TestTrain:
         doc = docs[0]
         tokens = encode(doc, vocab, bos)
         n = min(cfg.block_size, len(tokens) - 1)
-        kv_keys: list[list[list[Scalar]]] = [
-            [] for _ in range(cfg.n_layer)
-        ]
-        kv_values: list[list[list[Scalar]]] = [
-            [] for _ in range(cfg.n_layer)
-        ]
+        kv_keys: list[list[list[Scalar]]] = [[] for _ in range(cfg.n_layer)]
+        kv_values: list[list[list[Scalar]]] = [[] for _ in range(cfg.n_layer)]
         losses: list[Scalar] = []
         for pos_id in range(n):
             token_id, target_id = tokens[pos_id], tokens[pos_id + 1]
@@ -699,16 +690,10 @@ class TestTrain:
         doc = docs[0]
         tokens = encode(doc, trained_vocab, trained_bos)
         n = min(cfg.block_size, len(tokens) - 1)
-        kv_keys2: list[list[list[Scalar]]] = [
-            [] for _ in range(cfg.n_layer)
-        ]
-        kv_values2: list[list[list[Scalar]]] = [
-            [] for _ in range(cfg.n_layer)
-        ]
+        kv_keys2: list[list[list[Scalar]]] = [[] for _ in range(cfg.n_layer)]
+        kv_values2: list[list[list[Scalar]]] = [[] for _ in range(cfg.n_layer)]
         losses2: list[Scalar] = []
-        trained_cfg = config.model_copy(
-            update={"vocab_size": len(trained_vocab) + 1}
-        )
+        trained_cfg = config.model_copy(update={"vocab_size": len(trained_vocab) + 1})
         for pos_id in range(n):
             token_id, target_id = tokens[pos_id], tokens[pos_id + 1]
             logits = gpt(
@@ -753,9 +738,7 @@ class TestSample:
         sd, vocab, bos = train(
             docs, config, adam_config, num_steps=5, rng=random.Random(42)
         )
-        sample_config = SampleConfig(
-            temperature=0.5, max_tokens=4, num_samples=3
-        )
+        sample_config = SampleConfig(temperature=0.5, max_tokens=4, num_samples=3)
         cfg = GPTConfig(
             n_embd=4,
             n_head=2,
@@ -763,9 +746,7 @@ class TestSample:
             n_layer=1,
             vocab_size=len(vocab) + 1,
         )
-        results = sample(
-            sd, vocab, bos, cfg, sample_config, rng=random.Random(42)
-        )
+        results = sample(sd, vocab, bos, cfg, sample_config, rng=random.Random(42))
         assert len(results) == 3
         for s in results:
             assert isinstance(s, str)
@@ -787,12 +768,8 @@ class TestSample:
             n_layer=1,
             vocab_size=len(vocab) + 1,
         )
-        sample_config = SampleConfig(
-            temperature=1.0, max_tokens=4, num_samples=5
-        )
-        results = sample(
-            sd, vocab, bos, cfg, sample_config, rng=random.Random(42)
-        )
+        sample_config = SampleConfig(temperature=1.0, max_tokens=4, num_samples=5)
+        results = sample(sd, vocab, bos, cfg, sample_config, rng=random.Random(42))
         assert len(results) == 5
 
 
@@ -817,9 +794,7 @@ class TestHelpers:
                 assert m1[i][j].data == m2[i][j].data
 
     def test_get_params_count(self) -> None:
-        config = GPTConfig(
-            vocab_size=5, n_layer=1, n_embd=4, n_head=2, block_size=4
-        )
+        config = GPTConfig(vocab_size=5, n_layer=1, n_embd=4, n_head=2, block_size=4)
         sd = init_state_dict(config, rng=random.Random(42))
         params = _get_params(sd)
         # wte: 5*4=20, wpe: 4*4=16, lm_head: 5*4=20

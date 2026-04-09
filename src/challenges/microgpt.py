@@ -73,9 +73,7 @@ class Scalar:
 
     def __mul__(self, other: Scalar | float) -> Scalar:
         other = other if isinstance(other, Scalar) else Scalar(float(other))
-        return Scalar(
-            self.data * other.data, (self, other), (other.data, self.data)
-        )
+        return Scalar(self.data * other.data, (self, other), (other.data, self.data))
 
     def __pow__(self, other: float) -> Scalar:
         return Scalar(
@@ -231,14 +229,10 @@ def _matrix(
 ) -> list[list[Scalar]]:
     """Create a random weight matrix."""
     r = rng or random.Random()
-    return [
-        [Scalar(r.gauss(0, std)) for _ in range(nin)] for _ in range(nout)
-    ]
+    return [[Scalar(r.gauss(0, std)) for _ in range(nin)] for _ in range(nout)]
 
 
-def init_state_dict(
-    config: GPTConfig, rng: random.Random | None = None
-) -> StateDict:
+def init_state_dict(config: GPTConfig, rng: random.Random | None = None) -> StateDict:
     """Initialize all model weights."""
     sd: StateDict = {
         "wte": _matrix(config.vocab_size, config.n_embd, rng=rng),
@@ -246,24 +240,12 @@ def init_state_dict(
         "lm_head": _matrix(config.vocab_size, config.n_embd, rng=rng),
     }
     for i in range(config.n_layer):
-        sd[f"layer{i}.attn_wq"] = _matrix(
-            config.n_embd, config.n_embd, rng=rng
-        )
-        sd[f"layer{i}.attn_wk"] = _matrix(
-            config.n_embd, config.n_embd, rng=rng
-        )
-        sd[f"layer{i}.attn_wv"] = _matrix(
-            config.n_embd, config.n_embd, rng=rng
-        )
-        sd[f"layer{i}.attn_wo"] = _matrix(
-            config.n_embd, config.n_embd, rng=rng
-        )
-        sd[f"layer{i}.mlp_fc1"] = _matrix(
-            4 * config.n_embd, config.n_embd, rng=rng
-        )
-        sd[f"layer{i}.mlp_fc2"] = _matrix(
-            config.n_embd, 4 * config.n_embd, rng=rng
-        )
+        sd[f"layer{i}.attn_wq"] = _matrix(config.n_embd, config.n_embd, rng=rng)
+        sd[f"layer{i}.attn_wk"] = _matrix(config.n_embd, config.n_embd, rng=rng)
+        sd[f"layer{i}.attn_wv"] = _matrix(config.n_embd, config.n_embd, rng=rng)
+        sd[f"layer{i}.attn_wo"] = _matrix(config.n_embd, config.n_embd, rng=rng)
+        sd[f"layer{i}.mlp_fc1"] = _matrix(4 * config.n_embd, config.n_embd, rng=rng)
+        sd[f"layer{i}.mlp_fc2"] = _matrix(config.n_embd, 4 * config.n_embd, rng=rng)
     return sd
 
 
@@ -342,12 +324,7 @@ def adam_step(
         v[i] = config.beta2 * v[i] + (1 - config.beta2) * p.grad**2
         m_hat = m[i] / (1 - config.beta1 ** (step + 1))
         v_hat = v[i] / (1 - config.beta2 ** (step + 1))
-        p.data -= (
-            lr_scale
-            * config.learning_rate
-            * m_hat
-            / (v_hat**0.5 + config.eps)
-        )
+        p.data -= lr_scale * config.learning_rate * m_hat / (v_hat**0.5 + config.eps)
         p.grad = 0.0
 
 
@@ -381,19 +358,13 @@ def train(
         tokens = encode(doc, vocab, bos)
         n = min(config.block_size, len(tokens) - 1)
 
-        kv_keys: list[list[list[Scalar]]] = [
-            [] for _ in range(config.n_layer)
-        ]
-        kv_values: list[list[list[Scalar]]] = [
-            [] for _ in range(config.n_layer)
-        ]
+        kv_keys: list[list[list[Scalar]]] = [[] for _ in range(config.n_layer)]
+        kv_values: list[list[list[Scalar]]] = [[] for _ in range(config.n_layer)]
         losses: list[Scalar] = []
 
         for pos_id in range(n):
             token_id, target_id = tokens[pos_id], tokens[pos_id + 1]
-            logits = gpt(
-                token_id, pos_id, kv_keys, kv_values, config, state_dict
-            )
+            logits = gpt(token_id, pos_id, kv_keys, kv_values, config, state_dict)
             probs = softmax(logits)
             loss_t = -probs[target_id].log()
             losses.append(loss_t)
@@ -423,19 +394,13 @@ def sample(
     results: list[str] = []
 
     for _ in range(sample_config.num_samples):
-        kv_keys: list[list[list[Scalar]]] = [
-            [] for _ in range(config.n_layer)
-        ]
-        kv_values: list[list[list[Scalar]]] = [
-            [] for _ in range(config.n_layer)
-        ]
+        kv_keys: list[list[list[Scalar]]] = [[] for _ in range(config.n_layer)]
+        kv_values: list[list[list[Scalar]]] = [[] for _ in range(config.n_layer)]
         token_id = bos
         sample_tokens: list[int] = []
 
         for pos_id in range(sample_config.max_tokens):
-            logits = gpt(
-                token_id, pos_id, kv_keys, kv_values, config, state_dict
-            )
+            logits = gpt(token_id, pos_id, kv_keys, kv_values, config, state_dict)
             scaled = [lg / sample_config.temperature for lg in logits]
             probs = softmax(scaled)
             token_id = r.choices(
