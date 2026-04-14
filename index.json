@@ -51,7 +51,8 @@
       "ckpt-a740ba1c5926447f",
       "ckpt-c855026fa73ae7ee",
       "ckpt-06e3506a6dc71441",
-      "ckpt-12a21401b8e98e81"
+      "ckpt-12a21401b8e98e81",
+      "ckpt-1430d99ee8f2da07"
     ]
   },
   "by_commit": {},
@@ -123,7 +124,8 @@
     "issue-1718": [
       "ckpt-c855026fa73ae7ee",
       "ckpt-06e3506a6dc71441",
-      "ckpt-12a21401b8e98e81"
+      "ckpt-12a21401b8e98e81",
+      "ckpt-1430d99ee8f2da07"
     ]
   },
   "by_pr": {},
@@ -253,7 +255,8 @@
       "ckpt-06e3506a6dc71441"
     ],
     "issue-1718-failsafe-push": [
-      "ckpt-12a21401b8e98e81"
+      "ckpt-12a21401b8e98e81",
+      "ckpt-1430d99ee8f2da07"
     ],
     "issue-1718-state-ls-remote": [
       "ckpt-c855026fa73ae7ee"
@@ -311,7 +314,8 @@
       "ckpt-a740ba1c5926447f",
       "ckpt-c855026fa73ae7ee",
       "ckpt-06e3506a6dc71441",
-      "ckpt-12a21401b8e98e81"
+      "ckpt-12a21401b8e98e81",
+      "ckpt-1430d99ee8f2da07"
     ]
   },
   "by_trigger": {
@@ -366,7 +370,8 @@
       "ckpt-a740ba1c5926447f",
       "ckpt-c855026fa73ae7ee",
       "ckpt-06e3506a6dc71441",
-      "ckpt-12a21401b8e98e81"
+      "ckpt-12a21401b8e98e81",
+      "ckpt-1430d99ee8f2da07"
     ]
   },
   "checkpoints": [
@@ -1338,8 +1343,27 @@
       "tool_call_count": 0,
       "total_tokens": 0,
       "trigger_type": "session_end"
+    },
+    {
+      "agent_type": "unknown",
+      "branch": "egg/issue-1718",
+      "commit_sha": null,
+      "created_at": "2026-04-14T02:36:24.588882Z",
+      "files_touched_count": 0,
+      "id": "ckpt-1430d99ee8f2da07",
+      "issue_number": null,
+      "message_count": 0,
+      "pipeline_id": "issue-1718",
+      "pipeline_phase": null,
+      "pr_number": null,
+      "repo": null,
+      "session_id": "issue-1718-failsafe-push",
+      "session_status": "completed",
+      "tool_call_count": 0,
+      "total_tokens": 0,
+      "trigger_type": "session_end"
     }
   ],
-  "last_updated": "2026-04-14T02:36:20.556350Z",
+  "last_updated": "2026-04-14T02:36:25.268730Z",
   "schemaVersion": "2.0"
 }
