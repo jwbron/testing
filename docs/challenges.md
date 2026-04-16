@@ -1006,7 +1006,7 @@ four levels:
    metadata.
 
 All keys and values are strings. Operations accept an optional `timestamp`
-keyword argument (default `0.0`) to support TTL logic using logical
+keyword argument (default `0`) to support TTL logic using logical
 timestamps (floats) rather than wall-clock time.
 
 ### Architecture Overview
