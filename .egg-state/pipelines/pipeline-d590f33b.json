@@ -5,7 +5,7 @@
   "branch": "egg/pipeline-d590f33b/work",
   "base_branch": null,
   "prompt": "In-Memory Key-Value Store with Progressive Extensions\n\nLevel 1: Implement a key-value store with get(key), put(key, value), and delete(key). Fixed capacity N with LRU eviction.\nLevel 2: Add scan(prefix) that returns all key-value pairs where the key starts with the given prefix.\nLevel 3: Add TTL (time-to-live) support. put(key, value, ttl) where the entry expires after ttl seconds. A timestamp is passed to each operation rather than using real time. Expired keys should be evicted and not returned by get or scan.\nLevel 4: Add compact() that serializes the current store to a compressed string representation, and restore(data) that reconstructs the store from that representation.",
-  "status": "running",
+  "status": "complete",
   "current_phase": "pr",
   "config": {
     "auto_create_pr": true,
@@ -177,11 +177,29 @@
       "error": null,
       "hitl_feedback": null,
       "phase_start_sha": "fccd8262eb0c915eef92a7b5a27d90a4bc6afcae"
+    },
+    "pr": {
+      "phase": "pr",
+      "status": "complete",
+      "started_at": "2026-04-16T02:45:10.247437Z",
+      "work_started_at": "2026-04-16T02:45:10.944280Z",
+      "completed_at": "2026-04-16T02:46:06.360817Z",
+      "containers": [],
+      "agents": [],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [],
+      "artifacts": {
+        "pr_url": "https://github.com/jwbron/testing/pull/12"
+      },
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": "ea9d7613915ffabfc5bbeb2809eaedfd57ede363"
     }
   },
   "decisions": [],
   "created_at": "2026-04-16T02:31:50.765967Z",
-  "updated_at": "2026-04-16T02:45:10.237517Z",
+  "updated_at": "2026-04-16T02:46:59.803612Z",
   "contract_synced": true,
   "network_mode": null,
   "mode": "issue",
@@ -192,5 +210,5 @@
   "source_branch": null,
   "source_artifact_prefix": null,
   "run_epoch": null,
-  "version": 11
+  "version": 16
 }
