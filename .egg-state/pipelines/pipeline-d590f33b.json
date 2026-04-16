@@ -1,0 +1,196 @@
+{
+  "id": "pipeline-d590f33b",
+  "issue_number": null,
+  "repo": "jwbron/testing",
+  "branch": "egg/pipeline-d590f33b/work",
+  "base_branch": null,
+  "prompt": "In-Memory Key-Value Store with Progressive Extensions\n\nLevel 1: Implement a key-value store with get(key), put(key, value), and delete(key). Fixed capacity N with LRU eviction.\nLevel 2: Add scan(prefix) that returns all key-value pairs where the key starts with the given prefix.\nLevel 3: Add TTL (time-to-live) support. put(key, value, ttl) where the entry expires after ttl seconds. A timestamp is passed to each operation rather than using real time. Expired keys should be evicted and not returned by get or scan.\nLevel 4: Add compact() that serializes the current store to a compressed string representation, and restore(data) that reconstructs the store from that representation.",
+  "status": "running",
+  "current_phase": "pr",
+  "config": {
+    "auto_create_pr": true,
+    "parallel_agents": true,
+    "max_review_cycles": 3,
+    "max_hitl_review_cycles": 3,
+    "hitl_gates": false,
+    "concurrent_execution": false,
+    "concurrent_phases": [
+      "refine",
+      "plan",
+      "implement"
+    ],
+    "max_concurrent_agents": 6,
+    "message_poll_hint_seconds": 30,
+    "consensus_timeout_minutes": 30,
+    "agent_idle_timeout_minutes": 60,
+    "overseer_enabled": true,
+    "orchestrator_heartbeat_timeout_seconds": 120,
+    "orchestrator_implement_heartbeat_timeout_seconds": 600,
+    "orchestrator_error_repeat_threshold": 3,
+    "orchestrator_message_rate_limit": 20,
+    "overseer_poll_interval_seconds": 30,
+    "overseer_max_redirects_before_escalation": 2,
+    "overseer_decision_maker_model": "sonnet",
+    "overseer_max_turns": 2000,
+    "overseer_max_respawns": 3,
+    "overseer_rerun_min_work_seconds": 60,
+    "overseer_hitl_propagation_timeout_seconds": 300,
+    "post_proposal_grace_seconds": 300,
+    "auto_repropose_debounce_seconds": 60,
+    "max_auto_repropose": 5,
+    "orchestrator_post_ack_confirmation_timeout_seconds": 180,
+    "active_agent_stall_extension_seconds": 120,
+    "start_phase": "implement"
+  },
+  "phases": {
+    "implement": {
+      "phase": "implement",
+      "status": "complete",
+      "started_at": "2026-04-16T02:32:21.892691Z",
+      "work_started_at": "2026-04-16T02:32:22.584000Z",
+      "completed_at": "2026-04-16T02:44:18.716982Z",
+      "containers": [
+        {
+          "container_id": "6fc91d1853ca2f2b2f5a349035f96359c3331f944a48bf1e2e6602f2e94ce381",
+          "container_name": "pipeline-d590f33b-coder",
+          "status": "exited",
+          "started_at": "2026-04-16T02:32:23.229636Z",
+          "exited_at": "2026-04-16T02:44:16.657820Z",
+          "exit_code": 0,
+          "agent_role": "coder",
+          "session_token": null
+        },
+        {
+          "container_id": "194b2d4daab9072849aba2250fdf1222aa272f717c22e9ea9dff77a31e7fac9a",
+          "container_name": "pipeline-d590f33b-reviewer_code",
+          "status": "exited",
+          "started_at": "2026-04-16T02:32:23.229651Z",
+          "exited_at": "2026-04-16T02:44:16.657830Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_code",
+          "session_token": null
+        },
+        {
+          "container_id": "9a962f3a32f7fc9a21c0ecdd52277c99a576dc11d47f66b8ab325edd3aa3c044",
+          "container_name": "pipeline-d590f33b-tester",
+          "status": "exited",
+          "started_at": "2026-04-16T02:32:23.229656Z",
+          "exited_at": "2026-04-16T02:44:16.657833Z",
+          "exit_code": 0,
+          "agent_role": "tester",
+          "session_token": null
+        },
+        {
+          "container_id": "f9a9ab4367d880bf26337f39addaa572356279710e095496cfb121490b043a3e",
+          "container_name": "pipeline-d590f33b-documenter",
+          "status": "exited",
+          "started_at": "2026-04-16T02:32:23.229660Z",
+          "exited_at": "2026-04-16T02:44:16.657835Z",
+          "exit_code": 0,
+          "agent_role": "documenter",
+          "session_token": null
+        },
+        {
+          "container_id": "753218424e35d7db85add5171898eeeeb302d92d0d5d847f8b645be105d52a35",
+          "container_name": "pipeline-d590f33b-reviewer_contract",
+          "status": "exited",
+          "started_at": "2026-04-16T02:32:23.229664Z",
+          "exited_at": "2026-04-16T02:44:16.657839Z",
+          "exit_code": 0,
+          "agent_role": "reviewer_contract",
+          "session_token": null
+        }
+      ],
+      "agents": [
+        {
+          "role": "coder",
+          "status": "complete",
+          "container_id": "6fc91d1853ca2f2b2f5a349035f96359c3331f944a48bf1e2e6602f2e94ce381",
+          "started_at": "2026-04-16T02:32:23.229645Z",
+          "completed_at": "2026-04-16T02:44:16.657758Z",
+          "commit": "8cf69e1495746b0c907677cbde47df4dbd8c512b",
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "reviewer_code",
+          "status": "complete",
+          "container_id": "194b2d4daab9072849aba2250fdf1222aa272f717c22e9ea9dff77a31e7fac9a",
+          "started_at": "2026-04-16T02:32:23.229654Z",
+          "completed_at": "2026-04-16T02:44:16.657784Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "tester",
+          "status": "complete",
+          "container_id": "9a962f3a32f7fc9a21c0ecdd52277c99a576dc11d47f66b8ab325edd3aa3c044",
+          "started_at": "2026-04-16T02:32:23.229658Z",
+          "completed_at": "2026-04-16T02:44:16.657789Z",
+          "commit": "ac76fe10dd9090afa2ec5776e70faf4e00122628",
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "documenter",
+          "status": "complete",
+          "container_id": "f9a9ab4367d880bf26337f39addaa572356279710e095496cfb121490b043a3e",
+          "started_at": "2026-04-16T02:32:23.229662Z",
+          "completed_at": "2026-04-16T02:44:16.657794Z",
+          "commit": "6dc5d9fcfaa338e231c6a4c03f752590f93ef613",
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        },
+        {
+          "role": "reviewer_contract",
+          "status": "complete",
+          "container_id": "753218424e35d7db85add5171898eeeeb302d92d0d5d847f8b645be105d52a35",
+          "started_at": "2026-04-16T02:32:23.229666Z",
+          "completed_at": "2026-04-16T02:44:16.657798Z",
+          "commit": null,
+          "outputs": {},
+          "error": null,
+          "retry_count": 0,
+          "conflicts": []
+        }
+      ],
+      "review_cycles": 0,
+      "hitl_review_cycles": 0,
+      "cycle_timings": [
+        {
+          "cycle": 0,
+          "started_at": "2026-04-16T02:32:22.584000Z",
+          "completed_at": null,
+          "commit_sha": "fccd8262eb0c915eef92a7b5a27d90a4bc6afcae"
+        }
+      ],
+      "artifacts": {},
+      "error": null,
+      "hitl_feedback": null,
+      "phase_start_sha": "fccd8262eb0c915eef92a7b5a27d90a4bc6afcae"
+    }
+  },
+  "decisions": [],
+  "created_at": "2026-04-16T02:31:50.765967Z",
+  "updated_at": "2026-04-16T02:45:10.237517Z",
+  "contract_synced": true,
+  "network_mode": null,
+  "mode": "issue",
+  "pr_number": null,
+  "error": null,
+  "analysis": "### Task Analysis\n\n**Problem statement**: Implement a new standalone coding challenge — an in-memory key-value store with 4 progressive levels: basic CRUD with LRU eviction, prefix scanning, TTL with logical timestamps, and serialization/deserialization.\n\n**System context**: This is a coding challenges repo. Each challenge lives as a module in `src/challenges/` with corresponding tests in `tests/`. The project uses Python 3.12+, pytest, ruff, and mypy (strict mode). The new module should follow the same conventions as existing challenges (e.g., `lru_cache.py`, `nosql_db.py`).\n\n**Files affected**:\n- `src/challenges/kv_store.py` — new module with the full KV store implementation (all 4 levels)\n- `tests/test_kv_store.py` — comprehensive tests covering all levels\n\n**Scope (4 levels)**:\n1. `get(key)`, `put(key, value)`, `delete(key)` with fixed capacity N and LRU eviction\n2. `scan(prefix)` returning all KV pairs where key starts with prefix\n3. `put(key, value, ttl)` with logical timestamps passed to each operation; expired keys not returned\n4. `compact()` serializes store to compressed string; `restore(data)` reconstructs it\n\n**Risks / edge cases**: TTL with logical timestamps (Level 3) requires all operations to accept a timestamp parameter. Lazy vs eager expiration — lazy expiration on access, but capacity checks should not count expired entries. `scan(prefix)` is O(n). `compact()`/`restore()` must preserve LRU order and TTL metadata.\n\n**Important**: This is a NEW standalone implementation. Do NOT reuse or extend the existing `lru_cache.py` or `nosql_db.py` modules.",
+  "plan": "# Plan: In-Memory Key-Value Store with Progressive Extensions\n\n## Summary\n\nImplement a new `KVStore` class in `src/challenges/kv_store.py` that progressively adds features across 4 levels. The store uses a hash map for O(1) key lookup and a doubly-linked list for LRU tracking. All operations accept an optional `timestamp` parameter (default 0) to support Level 3's TTL without breaking earlier levels. Expired entries are lazily evicted on access. `compact()`/`restore()` use JSON + zlib for a compressed string representation.\n\n**Risks / edge cases**: `scan(prefix)` is O(n) over all keys — acceptable for a challenge. Lazy TTL expiration means capacity checks could count expired-but-not-yet-evicted entries; the implementation should eagerly check expiry during eviction decisions. `compact()`/`restore()` must preserve LRU order and TTL metadata.\n\n## Implementation\n\n### Phase 1: Implement\n\nCreate a new `KVStore` class with all 4 levels of functionality plus comprehensive tests.\n\n**Tasks**:\n1. **[task-1-1]** Create `src/challenges/kv_store.py` with `KVStore(capacity)` class — `get(key, timestamp=0)`, `put(key, value, ttl=None, timestamp=0)`, `delete(key, timestamp=0)` using a dict + doubly-linked list for O(1) LRU eviction. Keys and values are strings. Acceptance: basic get/put/delete work correctly with LRU eviction at capacity\n2. **[task-1-2]** Add `scan(prefix, timestamp=0)` that iterates all entries, skips expired ones, and returns a list of `(key, value)` tuples where key starts with `prefix`. Acceptance: scan returns correct key-value pairs matching the prefix\n3. **[task-1-3]** Implement TTL logic — store absolute expiry (`timestamp + ttl`) per entry. `get`, `scan`, and capacity checks treat expired entries as absent. Expired entries are lazily cleaned up on access. Acceptance: expired entries are not returned by get or scan and are evicted properly\n4. **[task-1-4]** Add `compact(timestamp=0)` returning a base64-encoded zlib-compressed JSON string of all non-expired entries (with LRU order and TTL metadata), and `restore(data)` that reconstructs the store from that string. Acceptance: compact/restore round-trip preserves all store state including LRU order and TTL metadata\n5. **[task-1-5]** Create `tests/test_kv_store.py` with comprehensive tests for all 4 levels — basic CRUD, eviction order, prefix scan, TTL expiry with logical timestamps, and compact/restore round-trips. Acceptance: all tests pass, covering happy paths and edge cases for each level\n\n```yaml\n# yaml-tasks\npr:\n  title: \"Add in-memory key-value store challenge with 4 levels\"\n  description: |\n    Implements a new coding challenge: an in-memory key-value store with\n    progressive extensions (LRU eviction, prefix scan, TTL, compact/restore).\n  test_plan: |\n    - Automated: pytest tests in tests/test_kv_store.py cover all 4 levels\n    - Manual: verify ruff and mypy pass with strict mode\n  manual_steps: |\n    Pre-merge: run `uv run pytest tests/test_kv_store.py` and `uv run mypy src/challenges/kv_store.py`\n    Post-merge: none\nphases:\n  - id: 1\n    name: Implement\n    goal: \"Create KVStore class with all 4 levels of functionality plus tests\"\n    tasks:\n      - id: task-1-1\n        description: \"Create `src/challenges/kv_store.py` with `KVStore(capacity)` — `get(key, timestamp=0)`, `put(key, value, ttl=None, timestamp=0)`, `delete(key, timestamp=0)` using dict + doubly-linked list for O(1) LRU eviction. Keys and values are strings.\"\n        acceptance: \"Basic get/put/delete work correctly with LRU eviction at capacity\"\n        files:\n          - src/challenges/kv_store.py\n      - id: task-1-2\n        description: \"Add `scan(prefix, timestamp=0)` that iterates all entries, skips expired ones, and returns a list of `(key, value)` tuples where key starts with `prefix`.\"\n        acceptance: \"scan returns correct key-value pairs matching the prefix, skipping expired entries\"\n        files:\n          - src/challenges/kv_store.py\n      - id: task-1-3\n        description: \"Implement TTL logic — store absolute expiry (`timestamp + ttl`) per entry. `get`, `scan`, and capacity checks treat expired entries as absent. Expired entries are lazily cleaned up on access.\"\n        acceptance: \"Expired entries (based on logical timestamp) are not returned by get or scan and are evicted properly\"\n        files:\n          - src/challenges/kv_store.py\n      - id: task-1-4\n        description: \"Add `compact(timestamp=0)` returning a base64-encoded zlib-compressed JSON string of all non-expired entries (with LRU order and TTL metadata), and `restore(data)` that reconstructs the store from that string.\"\n        acceptance: \"compact/restore round-trip preserves all store state including LRU order and TTL metadata\"\n        files:\n          - src/challenges/kv_store.py\n      - id: task-1-5\n        description: \"Create `tests/test_kv_store.py` with comprehensive tests for all 4 levels — basic CRUD, eviction order, prefix scan, TTL expiry with logical timestamps, and compact/restore round-trips.\"\n        acceptance: \"All tests pass covering happy paths and edge cases for each level\"\n        files:\n          - tests/test_kv_store.py\n```",
+  "source_branch": null,
+  "source_artifact_prefix": null,
+  "run_epoch": null,
+  "version": 11
+}
