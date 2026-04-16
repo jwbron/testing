@@ -982,3 +982,271 @@ names = sample(state_dict, vocab, bos, config,
 for name in names:
     print(name)
 ```
+
+---
+
+## In-Memory Key-Value Store
+
+**Module**: `src/challenges/kv_store.py`
+**Tests**: `tests/test_kv_store.py`
+
+### Problem Statement
+
+Build an in-memory key-value store with progressive feature extensions across
+four levels:
+
+1. **Level 1 — Basic CRUD with LRU Eviction**: `get`, `put`, and `delete`
+   operations with a fixed capacity and Least Recently Used eviction.
+2. **Level 2 — Prefix Scan**: `scan(prefix)` returns all key-value pairs whose
+   key starts with the given prefix.
+3. **Level 3 — TTL (Time-to-Live)**: Entries can have an expiry time. Expired
+   entries are treated as absent and lazily cleaned up on access.
+4. **Level 4 — Compact/Restore**: Serialize the entire store state to a
+   compressed string and restore it later, preserving LRU order and TTL
+   metadata.
+
+All keys and values are strings. Operations accept an optional `timestamp`
+keyword argument (default `0.0`) to support TTL logic using logical
+timestamps (floats) rather than wall-clock time.
+
+### Architecture Overview
+
+The implementation combines two data structures for O(1) operations:
+
+| Component | Role |
+|-----------|------|
+| **Hash map** (`dict`) | O(1) key → node lookup |
+| **Doubly-linked list** | O(1) insertion, removal, and reordering to track access recency |
+
+Sentinel (dummy) head and tail nodes eliminate edge-case checks. The most
+recently used entry is at the front (after head), and the least recently used
+is at the back (before tail).
+
+```
+ head <-> node_A <-> node_B <-> node_C <-> tail
+ (sentinel)     most recent ... least recent     (sentinel)
+```
+
+TTL metadata is stored per entry as an absolute expiry timestamp
+(`timestamp + ttl`). Entries are lazily evicted — checked for expiry on each
+`get`, `scan`, `delete`, and capacity check during `put`.
+
+### API Reference
+
+```python
+from challenges.kv_store import KVStore
+
+store = KVStore(capacity=3)
+```
+
+#### `KVStore(capacity: int)`
+
+Create a new key-value store with the given maximum capacity.
+
+- **capacity** — positive integer specifying the maximum number of live
+  entries the store can hold. Raises `ValueError` if not positive.
+
+#### `get(key: str, *, timestamp: float = 0) -> str | None`
+
+Retrieve the value associated with `key`.
+
+- Returns the value if the key exists and has not expired, and marks it as
+  **most recently used**.
+- Returns `None` if the key is not present or has expired.
+- Expired entries are lazily removed on access.
+- `timestamp` is keyword-only.
+
+#### `put(key: str, value: str, ttl: float | None = None, *, timestamp: float = 0) -> None`
+
+Insert or update a key-value pair.
+
+- If the key already exists (and is not expired), its value and TTL are
+  updated and it becomes the **most recently used** entry.
+- If the key exists but is expired, the expired entry is removed and the
+  new entry is inserted as if the key were absent.
+- If `ttl` is provided, the entry expires when `timestamp >= timestamp + ttl`
+  (i.e., expiry is inclusive).
+- If the store is at capacity, all expired entries are purged first. If still
+  at capacity, the **least recently used** live entry is evicted.
+- `ttl` is positional; `timestamp` is keyword-only.
+
+#### `delete(key: str, *, timestamp: float = 0) -> bool`
+
+Remove the entry for `key`.
+
+- Returns `True` if the key was present and non-expired.
+- Returns `False` if the key was not present or was already expired.
+  Expired entries are removed as a side effect.
+- `timestamp` is keyword-only.
+
+#### `scan(prefix: str, *, timestamp: float = 0) -> list[tuple[str, str]]`
+
+Return all non-expired key-value pairs where the key starts with `prefix`.
+
+- Iterates all entries in **most-recently-used-first** order, skipping (and
+  lazily removing) expired ones.
+- Returns a list of `(key, value)` tuples.
+- `timestamp` is keyword-only.
+
+#### `compact(*, timestamp: float = 0) -> str`
+
+Serialize the store's state to a compressed string.
+
+- Returns a base64-encoded, zlib-compressed JSON string containing the
+  store's capacity, all non-expired entries (in MRU-first order), and their
+  TTL metadata.
+- Useful for snapshotting store state for backup or transfer.
+- `timestamp` is keyword-only.
+
+#### `KVStore.restore(data: str) -> KVStore` *(classmethod)*
+
+Reconstruct a `KVStore` from a string produced by `compact()`.
+
+- Returns a **new** `KVStore` instance with the same capacity, entries,
+  LRU order, and TTL metadata as the original.
+- Does not modify any existing store — creates a fresh instance.
+
+### Complexity
+
+| Operation | Time | Notes |
+|-----------|------|-------|
+| `get` | O(1) | Hash map lookup + linked list move |
+| `put` | O(1) amortized | Hash map insert + linked list ops; O(n) when expired entries are purged |
+| `delete` | O(1) | Hash map delete + linked list removal |
+| `scan` | O(n) | Iterates all entries to check prefix match |
+| `compact` | O(n) | Serializes all live entries |
+| `restore` | O(n) | Deserializes and rebuilds the store |
+| Space | O(capacity) | Stores up to `capacity` entries |
+
+### Edge Cases
+
+The test suite covers the following scenarios:
+
+**Level 1 — Basic CRUD & LRU Eviction**
+
+| Case | Description | Expected Behavior |
+|------|-------------|-------------------|
+| Basic get/put | Insert and retrieve values | Returns correct value |
+| Missing key | `get` on a key not in store | Returns `None` |
+| Capacity eviction | Insert beyond capacity | LRU entry is evicted |
+| Access-order update | `get` updates recency | Accessed key is not evicted next |
+| Overwrite existing key | `put` with existing key | Value updated, no eviction |
+| Delete existing key | `delete` a present key | Returns `True`, key removed |
+| Delete missing key | `delete` a non-existent key | Returns `False` |
+
+**Level 2 — Prefix Scan**
+
+| Case | Description | Expected Behavior |
+|------|-------------|-------------------|
+| Matching prefix | `scan("user:")` with matching keys | Returns matching pairs |
+| No matches | `scan("zzz")` with no matching keys | Returns empty list |
+| Empty prefix | `scan("")` | Returns all entries |
+
+**Level 3 — TTL**
+
+| Case | Description | Expected Behavior |
+|------|-------------|-------------------|
+| Expired entry | `get` when `timestamp >= expires_at` | Returns `None` |
+| Live entry | `get` when `timestamp < expires_at` | Returns value |
+| Expired in scan | `scan` skips expired entries | Only live entries returned; expired lazily removed |
+| Expired frees capacity | Expired entries purged before LRU eviction | No unnecessary eviction of live entries |
+| Expired overwrite | `put` on an expired key | Treated as new insert |
+
+**Level 4 — Compact/Restore**
+
+| Case | Description | Expected Behavior |
+|------|-------------|-------------------|
+| Round-trip | `compact` then `KVStore.restore` | All entries preserved |
+| Capacity preserved | Restored store has same capacity | Capacity from snapshot |
+| LRU order preserved | MRU order matches after restore | Eviction order unchanged |
+| TTL preserved | TTL metadata survives round-trip | Expiry still applies |
+| Expired excluded | Expired entries not in compact output | Clean snapshot |
+
+### Design Decisions
+
+1. **Logical timestamps (float)** instead of wall-clock time allow
+   deterministic testing and make the TTL behavior reproducible. Callers pass
+   the current timestamp explicitly as a keyword argument.
+
+2. **Lazy + eager expiry** — expired entries are lazily removed when
+   encountered during `get`, `scan`, or `delete`. During `put`, all expired
+   entries are eagerly purged before checking capacity, preventing unnecessary
+   eviction of live entries.
+
+3. **String keys and values** match common key-value store conventions (e.g.,
+   Redis, Memcached) and make serialization for `compact`/`restore`
+   straightforward.
+
+4. **Base64 + zlib for compact** produces a single opaque string that is safe
+   to store or transmit, while keeping the snapshot compact. The JSON payload
+   uses short keys (`"k"`, `"v"`, `"e"`) to minimize size.
+
+5. **Sentinel nodes** for the doubly-linked list (same pattern as the LRU
+   Cache challenge) eliminate null-pointer checks and simplify
+   insertion/removal logic.
+
+6. **`restore` is a classmethod** rather than an instance method — it returns
+   a new `KVStore` with capacity recovered from the snapshot, making it
+   impossible to misuse (e.g., restoring into a store with a different
+   capacity).
+
+7. **`__slots__` on `_Node`** reduces memory overhead per entry, matching the
+   pattern used in the LRU Cache challenge.
+
+### Usage Examples
+
+```python
+from challenges.kv_store import KVStore
+
+# --- Level 1: Basic CRUD with LRU eviction ---
+store = KVStore(capacity=3)
+store.put("name", "Alice")
+store.put("age", "30")
+store.put("role", "admin")
+
+store.get("name")       # => "Alice"
+store.get("missing")    # => None
+
+store.put("city", "Seattle")  # evicts LRU entry ("age", since "name" was accessed)
+store.get("age")              # => None (evicted)
+
+store.delete("role")    # => True
+store.delete("role")    # => False (already deleted)
+
+# --- Level 2: Prefix scan ---
+store = KVStore(capacity=10)
+store.put("user:1", "Alice")
+store.put("user:2", "Bob")
+store.put("order:1", "Widget")
+
+# Results are in most-recently-used-first order
+store.scan("user:")     # => [("user:2", "Bob"), ("user:1", "Alice")]
+store.scan("order:")    # => [("order:1", "Widget")]
+store.scan("missing:")  # => []
+
+# --- Level 3: TTL support (timestamp is keyword-only) ---
+store = KVStore(capacity=10)
+store.put("session", "abc123", ttl=60, timestamp=100)
+
+store.get("session", timestamp=150)  # => "abc123" (not expired yet)
+store.get("session", timestamp=160)  # => None (expired: 100 + 60 = 160, inclusive)
+
+# Scan skips expired entries
+store.put("key1", "val1", ttl=10, timestamp=0)
+store.put("key2", "val2", ttl=100, timestamp=0)
+store.scan("key", timestamp=50)  # => [("key2", "val2")]  (key1 expired at t=10)
+
+# --- Level 4: Compact and restore ---
+store = KVStore(capacity=5)
+store.put("a", "1")
+store.put("b", "2")
+store.put("c", "3")
+
+snapshot = store.compact()
+
+# restore() is a classmethod — returns a new KVStore
+restored = KVStore.restore(snapshot)
+restored.get("a")  # => "1"
+restored.get("b")  # => "2"
+restored.get("c")  # => "3"
+```

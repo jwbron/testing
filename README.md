@@ -5,8 +5,9 @@ A Python project for solving coding challenges with modern tooling and CI.
 ## Overview
 
 This repository contains solutions to classic coding challenges, including
-**Merge Intervals**, an **In-Memory NoSQL Database**, an **LRU Cache**, and
-**MicroGPT** (a pure-Python GPT implementation). The project uses modern
+**Merge Intervals**, an **In-Memory NoSQL Database**, an **LRU Cache**,
+**MicroGPT** (a pure-Python GPT implementation), and an **In-Memory Key-Value
+Store** with LRU eviction, prefix scan, TTL, and compact/restore. The project uses modern
 Python tooling for a consistent development experience:
 
 - **[uv](https://docs.astral.sh/uv/)** &mdash; fast, reliable package management
@@ -55,14 +56,16 @@ testing/
 │       ├── merge_intervals.py       # Merge Intervals solution
 │       ├── nosql_db.py              # In-Memory NoSQL Database
 │       ├── lru_cache.py             # LRU Cache implementation
-│       └── microgpt.py              # MicroGPT (pure-Python GPT)
+│       ├── microgpt.py              # MicroGPT (pure-Python GPT)
+│       └── kv_store.py              # In-Memory Key-Value Store
 ├── tests/
 │   ├── __init__.py
 │   ├── test_merge_intervals.py      # Core test suite
 │   ├── test_merge_intervals_extended.py  # Extended edge-case tests
 │   ├── test_nosql_db.py             # NoSQL database test suite
 │   ├── test_lru_cache.py            # LRU Cache test suite
-│   └── test_microgpt.py             # MicroGPT test suite
+│   ├── test_microgpt.py             # MicroGPT test suite
+│   └── test_kv_store.py             # Key-Value Store test suite
 ├── docs/
 │   ├── index.md                     # Documentation hub
 │   └── challenges.md                # Challenge write-ups
@@ -199,6 +202,46 @@ Adam optimizer &middot; Text generation
 
 See [docs/challenges.md](docs/challenges.md) for the full write-up including
 architecture overview, API reference, autograd details, and test coverage.
+
+### In-Memory Key-Value Store
+
+An in-memory key-value store with progressive feature levels: basic CRUD with
+LRU eviction, prefix scan, TTL (time-to-live) support with logical timestamps,
+and compact/restore for state serialization.
+
+```python
+from challenges.kv_store import KVStore
+
+store = KVStore(capacity=3)
+store.put("name", "Alice")
+store.put("age", "30")
+store.put("role", "admin")
+
+store.get("name")                # => "Alice"
+store.put("city", "Seattle")     # evicts LRU entry
+store.scan("n")                  # => [("name", "Alice")]
+
+# TTL support with logical timestamps
+store.put("session", "tok123", ttl=60, timestamp=100)
+store.get("session", timestamp=150)  # => "tok123"
+store.get("session", timestamp=160)  # => None (expired at t=160)
+
+# Compact and restore (classmethod returns new KVStore)
+snapshot = store.compact()
+restored = KVStore.restore(snapshot)
+```
+
+**Features**: CRUD &middot; LRU eviction &middot; Prefix scan &middot;
+TTL with logical timestamps &middot; Compact/restore serialization
+
+| Metric | Value | Reason |
+|--------|-------|--------|
+| Time (`get`/`put`/`delete`) | O(1) | Hash map + linked list |
+| Time (`scan`) | O(n) | Iterates all entries |
+| Space | O(capacity) | Stores up to `capacity` entries |
+
+See [docs/challenges.md](docs/challenges.md) for the full write-up including
+architecture overview, API reference, and edge cases.
 
 ## CI
 
